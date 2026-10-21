@@ -9,14 +9,17 @@
 // so beeps stay on time even if the page's timers get throttled.
 
 export const COUNTDOWN_TICKS = 3; // short ticks on the last 3 s of the countdown
+export const PREWARN_MIN_PACE = 8; // optional pre-warning ticks only at paces this slow or slower
 const EPS = 1e-6; // float tolerance for timeline boundaries
 
 export class WorkoutRun {
-  constructor({ count, pace, countdown = 5, clock, sounds }) {
+  // prewarn: quiet ticks 2 s and 1 s before each burpee (slow paces only).
+  constructor({ count, pace, countdown = 5, prewarn = false, clock, sounds }) {
     this.count = count;
     this.pace = pace;
     this.total = count * pace;
     this.countdown = Math.max(0, countdown);
+    this.prewarn = prewarn && pace >= PREWARN_MIN_PACE;
     this.clock = clock;
     this.sounds = sounds || { schedule() {}, cancel() {} };
     this.state = 'idle'; // idle | countdown | running | paused | finished | stopped
@@ -127,9 +130,14 @@ export class WorkoutRun {
       const at = -k;
       if (at > now && k <= this.countdown) events.push({ at, kind: 'tick' });
     }
+    // First burpee: long "GO"; last: double pulse (when there's more than one).
     for (let i = 0; i < this.count; i++) {
       const at = i * this.pace;
-      if (at > now) events.push({ at, kind: 'beep' });
+      if (this.prewarn && i > 0) {
+        for (const k of [2, 1]) if (at - k > now) events.push({ at: at - k, kind: 'pre' });
+      }
+      const kind = i === 0 ? 'first' : i === this.count - 1 ? 'last' : 'beep';
+      if (at > now) events.push({ at, kind });
     }
     if (this.total > now) events.push({ at: this.total, kind: 'finish' });
     this.sounds.schedule(events.map((e) => ({ delay: e.at - now, kind: e.kind })));

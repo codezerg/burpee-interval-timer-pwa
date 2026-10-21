@@ -49,6 +49,7 @@ export function startRun(spec) {
     count: spec.count,
     pace: spec.pace,
     countdown: store.settings().countdown,
+    prewarn: store.settings().prewarn,
     clock: audio.now,
     sounds: audio.engineSounds,
   });

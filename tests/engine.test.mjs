@@ -32,9 +32,9 @@ test('schedules countdown ticks, one beep per burpee and a finish sound', () => 
     { delay: 2, kind: 'tick' },
     { delay: 3, kind: 'tick' },
     { delay: 4, kind: 'tick' },
-    { delay: 5, kind: 'beep' },
+    { delay: 5, kind: 'first' },
     { delay: 15, kind: 'beep' },
-    { delay: 25, kind: 'beep' },
+    { delay: 25, kind: 'last' },
     { delay: 35, kind: 'finish' },
   ]);
 });
@@ -80,7 +80,7 @@ test('pause freezes time and cancels beeps; resume reschedules only future beeps
   run.resume();
   assert.equal(run.state, 'running');
   const delays = lastSchedule().map((e) => [Math.round(e.delay * 100) / 100, e.kind]);
-  assert.deepEqual(delays, [[10, 'beep'], [25, 'beep'], [40, 'finish']]);
+  assert.deepEqual(delays, [[10, 'beep'], [25, 'last'], [40, 'finish']]);
 
   advance(10); // t = 30, third beep
   assert.equal(run.done(), 3);
@@ -114,7 +114,7 @@ test('skip countdown starts the first beep right away', () => {
   advance(1);
   run.skipCountdown();
   const first = lastSchedule()[0];
-  assert.equal(first.kind, 'beep');
+  assert.equal(first.kind, 'first');
   assert.ok(first.delay < 0.1);
   assert.equal(advance(0.05), 'running');
   assert.equal(run.done(), 1);
@@ -127,4 +127,14 @@ test('half-second paces work', () => {
   assert.equal(run.done(), 3);
   assert.equal(advance(4.5), 'finished');
   near(run.status().elapsed, 13.5);
+});
+
+test('pre-warning ticks 2 s and 1 s before each burpee, only at slow paces', () => {
+  const { run, lastSchedule } = setup({ count: 3, pace: 10, countdown: 0 });
+  run.prewarn = true;
+  run.start();
+  const kinds = lastSchedule().map((e) => [Math.round(e.delay * 100) / 100, e.kind]);
+  assert.deepEqual(kinds, [[0.05, 'first'], [8.05, 'pre'], [9.05, 'pre'], [10.05, 'beep'], [18.05, 'pre'], [19.05, 'pre'], [20.05, 'last'], [30.05, 'finish']]);
+  const fast = new WorkoutRun({ count: 3, pace: 5, countdown: 0, prewarn: true, clock: () => 0 });
+  assert.equal(fast.prewarn, false);
 });

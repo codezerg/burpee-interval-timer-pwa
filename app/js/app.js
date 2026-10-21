@@ -101,6 +101,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) onOp
 van.derive(() => {
   audio.setVolume(store.settings().volume);
   audio.setTheme(store.settings().soundTheme);
+  audio.setMixWithMusic(store.settings().mixWithMusic);
 });
 onOpen();
 backup.registerServiceWorker();

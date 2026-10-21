@@ -27,7 +27,9 @@ const DEFAULT_SETTINGS = {
   recoveryEvery: 4,    // remind after N training weeks; 0 = off
   recoveryPct: 55,     // recovery-week goal, % of the normal goal
   painCheck: true,     // ask "Anything hurting?" after a Hard rating
-  soundTheme: 'drum',  // drum | glass | chime | classic (see audio.js THEMES)
+  soundTheme: 'beep',  // beep | clave | soft (see audio.js THEMES)
+  prewarn: false,      // quiet ticks 2 s and 1 s before each burpee (paces of 8 s or slower)
+  mixWithMusic: false, // iPhone: let music keep playing (then the Silent switch mutes beeps)
 };
 
 const DEFAULT_UI = {
@@ -58,6 +60,10 @@ export function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+// Sound styles from earlier versions (drum, glass, chime, pop, classic) map to the current default.
+const SOUND_THEMES = ['beep', 'clave', 'soft'];
+const soundFix = (s) => (s && !SOUND_THEMES.includes(s.soundTheme) ? { soundTheme: 'beep' } : {});
+
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
@@ -70,7 +76,7 @@ function load() {
         periods: parsed.periods || [],
         plan: { days: [], cue: '', ...parsed.plan },
         challenges: parsed.challenges || {},
-        settings: { ...DEFAULT_SETTINGS, ...parsed.settings, ...(parsed.settings?.soundTheme === 'pop' ? { soundTheme: 'drum' } : {}) },
+        settings: { ...DEFAULT_SETTINGS, ...parsed.settings, ...soundFix(parsed.settings) },
         ui: { ...DEFAULT_UI, ...parsed.ui },
       };
     }

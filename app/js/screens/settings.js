@@ -91,6 +91,13 @@ function InstallBlock() {
     span({ class: 'small muted', style: 'line-height:1.45' }, ...how, ' It then opens full screen and works offline.'));
 }
 
+// Countdown, first burpee, a burpee, the last one, finish: the whole set in ~7 s.
+function playSample() {
+  audio.unlock();
+  [['tick', 0], ['tick', 1], ['tick', 2], ['first', 3], ['beep', 4.2], ['last', 5.2], ['finish', 6.2]]
+    .forEach(([kind, t]) => audio.play(kind, t));
+}
+
 async function exportBackup() {
   const how = await backup.exportBackup();
   if (how !== 'cancelled') toast(how === 'shared' ? 'Backup ready' : 'Backup downloaded');
@@ -149,14 +156,14 @@ export function Settings() {
         ),
         div({ class: 'stack' },
           strong('Sound'),
-          Seg(Object.entries(audio.THEMES).map(([id, t]) => [id, t.label]), () => s().soundTheme, (v) => {
+          Seg(audio.THEME_IDS.map((id) => [id, audio.THEMES[id].label]), () => s().soundTheme, (v) => {
             set({ soundTheme: v });
             audio.unlock();
             audio.play('beep', 0, v);
           }),
           div({ class: 'between' },
-            span({ class: 'small muted' }, 'Tap a sound to hear it.'),
-            button({ class: 'link-btn', style: 'color:var(--accent-ink)', onclick: () => { audio.unlock(); audio.play('finish'); } }, 'Hear the finish ›'),
+            span({ class: 'small muted' }, 'Low ticks count down, one beep per burpee, a double beep for the last one.'),
+            button({ class: 'link-btn', style: 'color:var(--accent-ink);flex-shrink:0', onclick: playSample }, 'Play a sample ›'),
           ),
         ),
         div({ class: 'stack' },
@@ -168,6 +175,26 @@ export function Settings() {
             type: 'range', min: 0.1, max: 1, step: 0.05, value: s().volume, 'aria-label': 'Beep volume',
             oninput: (e) => set({ volume: Number(e.target.value) }),
             onchange: testBeep,
+          }),
+        ),
+        div({ class: 'between' },
+          div({ class: 'stack', style: 'gap:2px' },
+            strong('Warning ticks before each beep'),
+            span({ class: 'small muted' }, 'Two quiet ticks, at 8 s per burpee or slower'),
+          ),
+          button({
+            class: 'switch', role: 'switch', 'aria-label': 'Warning ticks before each beep',
+            'aria-checked': () => String(s().prewarn), onclick: () => set({ prewarn: !s().prewarn }),
+          }),
+        ),
+        div({ class: 'between' },
+          div({ class: 'stack', style: 'gap:2px' },
+            strong('Let music keep playing'),
+            span({ class: 'small muted' }, 'iPhone: then the Silent switch also mutes the beeps'),
+          ),
+          button({
+            class: 'switch', role: 'switch', 'aria-label': 'Let music keep playing',
+            'aria-checked': () => String(s().mixWithMusic), onclick: () => set({ mixWithMusic: !s().mixWithMusic }),
           }),
         ),
         div({ class: 'between' },
