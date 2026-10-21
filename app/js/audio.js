@@ -186,6 +186,20 @@ export function play(kind, delay = 0, themeId = theme) {
   return voicesFor(kind, themeId).map((v) => voice(base + (v.at || 0), v));
 }
 
+// Previews in Settings: a new preview stops the previous one, so repeated
+// taps never stack up. `sequence` is [[kind, startSeconds], ...].
+let previewing = [];
+export function stopPreview() {
+  for (const src of previewing) {
+    try { src.stop(); } catch {}
+  }
+  previewing = [];
+}
+export function preview(sequence, themeId = theme) {
+  stopPreview();
+  previewing = sequence.flatMap(([kind, t]) => play(kind, t, themeId));
+}
+
 // For checks: render one cue offline (without the compressor) and return the samples.
 export async function renderOffline(kind, themeId) {
   const off = new OfflineAudioContext(1, 48000 * 2, 48000);

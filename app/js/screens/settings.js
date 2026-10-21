@@ -91,11 +91,26 @@ function InstallBlock() {
     span({ class: 'small muted', style: 'line-height:1.45' }, ...how, ' It then opens full screen and works offline.'));
 }
 
-// Countdown, first burpee, a burpee, the last one, finish: the whole set in ~7 s.
-function playSample() {
+// Countdown, first burpee, a burpee, the last one, finish: the whole set in ~7.5 s.
+// Tapping again while it plays stops it.
+const SAMPLE = [['tick', 0], ['tick', 1], ['tick', 2], ['first', 3], ['beep', 4.2], ['last', 5.2], ['finish', 6.2]];
+const SAMPLE_SECONDS = 7.6;
+const samplePlaying = van.state(false);
+let sampleTimer = null;
+
+function stopSample() {
+  audio.stopPreview();
+  clearTimeout(sampleTimer);
+  samplePlaying.val = false;
+}
+
+function toggleSample() {
+  if (samplePlaying.val) return stopSample();
   audio.unlock();
-  [['tick', 0], ['tick', 1], ['tick', 2], ['first', 3], ['beep', 4.2], ['last', 5.2], ['finish', 6.2]]
-    .forEach(([kind, t]) => audio.play(kind, t));
+  audio.preview(SAMPLE);
+  samplePlaying.val = true;
+  clearTimeout(sampleTimer);
+  sampleTimer = setTimeout(() => { samplePlaying.val = false; }, SAMPLE_SECONDS * 1000);
 }
 
 async function exportBackup() {
@@ -132,7 +147,7 @@ export function Settings() {
   const lastBackup = () => (s().lastBackupAt
     ? new Date(s().lastBackupAt).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' })
     : 'never');
-  const testBeep = () => { audio.unlock(); audio.play('beep'); };
+  const testBeep = () => { stopSample(); audio.unlock(); audio.preview([['beep', 0]]); };
 
   return div({ class: 'view' },
     main({ class: 'screen with-nav' },
@@ -158,12 +173,14 @@ export function Settings() {
           strong('Sound'),
           Seg(audio.THEME_IDS.map((id) => [id, audio.THEMES[id].label]), () => s().soundTheme, (v) => {
             set({ soundTheme: v });
+            stopSample();
             audio.unlock();
-            audio.play('beep', 0, v);
+            audio.preview([['beep', 0]], v);
           }),
           div({ class: 'between' },
             span({ class: 'small muted' }, 'Low ticks count down, one beep per burpee, a double beep for the last one.'),
-            button({ class: 'link-btn', style: 'color:var(--accent-ink);flex-shrink:0', onclick: playSample }, 'Play a sample ›'),
+            button({ class: 'link-btn', style: 'color:var(--accent-ink);flex-shrink:0', onclick: toggleSample },
+              () => (samplePlaying.val ? 'Stop sample' : 'Play a sample ›')),
           ),
         ),
         div({ class: 'stack' },
