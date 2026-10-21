@@ -82,6 +82,7 @@ export function WelcomeBack() {
     store.endBreak(now);
     if (withPlan) store.startRamp(restart.factors, now);
     if (last) store.markWelcomeSeen(last.id);
+    store.markReviewed(); // one "welcome" screen per return is enough
     resetTo('home');
     if (withPlan) toast('Gentle restart planned');
   };

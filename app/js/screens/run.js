@@ -86,7 +86,9 @@ function Running(paused) {
             ? [
               span({ class: 'eyebrow', style: 'font-weight:600' }, 'Take a breath'),
               span({ style: 'font-size:17px;font-weight:700' }, () => `${run.done()} done · ${run.count - run.done()} to go`),
-              span({ class: 'small muted' }, 'Pause time isn’t counted.'),
+              span({ class: 'small muted' }, runUi.spec.levelTest
+                ? 'A paused test doesn’t count for the level, but still counts as a workout.'
+                : 'Pause time isn’t counted.'),
             ]
             : [
               span({ class: 'eyebrow', style: 'font-weight:600' }, 'This burpee'),

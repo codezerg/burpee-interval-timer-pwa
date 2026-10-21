@@ -1,6 +1,10 @@
 // Data saved on the phone only (localStorage), held in one VanX reactive
 // object. Screens read it directly and update themselves when it changes;
 // a single van.derive writes it back to storage after every change.
+//
+// VanX gotcha: adding a NEW key to an existing object doesn't wake up code
+// that read the (missing) key before. To add a field, replace the object
+// (see dismissCatchUp, pickChallenge) instead of `obj.newKey = value`.
 
 import van from 'vanjs-core';
 import * as vanX from 'vanjs-ext';
@@ -23,11 +27,13 @@ const DEFAULT_SETTINGS = {
   recoveryEvery: 4,    // remind after N training weeks; 0 = off
   recoveryPct: 55,     // recovery-week goal, % of the normal goal
   painCheck: true,     // ask "Anything hurting?" after a Hard rating
+  soundTheme: 'glass', // glass | chime | pop | classic (see audio.js THEMES)
 };
 
 const DEFAULT_UI = {
   recoveryDismissedWeek: null, // "Not this week" on the recovery reminder
   welcomeSeenFor: null,        // last session id the Welcome back screen was shown for
+  reviewedWeek: null,          // week start of the last Monday review shown
 };
 
 function seed() {
@@ -41,6 +47,8 @@ function seed() {
     ],
     sessions: [],
     periods: [],
+    plan: { days: [], cue: '' },  // planned weekdays (0 = Sunday) and the cue, from the Monday review
+    challenges: {},               // { '2026-10': { kind, target, type?, title } }
     settings: { ...DEFAULT_SETTINGS },
     ui: { ...DEFAULT_UI },
   };
@@ -60,6 +68,8 @@ function load() {
         workouts: parsed.workouts || [],
         sessions: parsed.sessions || [],
         periods: parsed.periods || [],
+        plan: { days: [], cue: '', ...parsed.plan },
+        challenges: parsed.challenges || {},
         settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
         ui: { ...DEFAULT_UI, ...parsed.ui },
       };
@@ -143,8 +153,8 @@ export function openCatchUps(now = Date.now()) {
 }
 
 export function dismissCatchUp(sessionId) {
-  const s = data.sessions.find((x) => x.id === sessionId);
-  if (s) s.dismissed = true;
+  const i = data.sessions.findIndex((x) => x.id === sessionId);
+  if (i >= 0) data.sessions[i] = { ...vanX.compact(data.sessions[i]), dismissed: true };
 }
 
 // Deletes a session and any catch-ups linked to it.
@@ -194,6 +204,20 @@ export function markWelcomeSeen(sessionId) {
   data.ui.welcomeSeenFor = sessionId;
 }
 
+// ---- Monday review, weekly plan, monthly challenge
+export function markReviewed(now = Date.now()) {
+  data.ui.reviewedWeek = weekStart(now, sd());
+}
+
+export function savePlan(days, cue) {
+  data.plan.days = [...days].sort();
+  data.plan.cue = cue.trim();
+}
+
+export function pickChallenge(key, challenge) {
+  data.challenges = { ...vanX.compact(data.challenges), [key]: { ...challenge } };
+}
+
 export function resetAll() {
   vanX.replace(data, seed());
 }
@@ -233,6 +257,8 @@ export function importData(backup) {
     workouts: backup.workouts,
     sessions: backup.sessions,
     periods: backup.periods || [],
+    plan: { days: [], cue: '', ...backup.plan },
+    challenges: backup.challenges || {},
     settings: { ...DEFAULT_SETTINGS, ...backup.settings },
     ui: { ...DEFAULT_UI, ...backup.ui },
   });

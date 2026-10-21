@@ -148,7 +148,7 @@ h2 { margin: 0; font-size: 17px; font-weight: 700; }
   width: 100%; max-width: 480px;
   height: calc(76px + var(--safe-bottom)); padding-bottom: calc(8px + var(--safe-bottom));
   background: var(--card); border-top: 1px solid var(--line);
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .nav button {
   border: none; background: transparent; color: var(--muted);
@@ -369,3 +369,28 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
 .info-list > div { display: flex; gap: 10px; align-items: flex-start; }
 .ramp { display: grid; grid-template-columns: 64px 1fr 48px; align-items: center; gap: 10px; }
 .ramp .meter { height: 12px; }
+
+/* ---- phase 5: plan, levels, challenge, review, year */
+.plan { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; font-size: 14px; color: var(--ink-2); }
+.plan svg { color: var(--accent-ink); flex-shrink: 0; }
+.plan.done svg { color: var(--good); }
+.test-card { background: var(--ink); color: #FFFFFF; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 4px; }
+.test-card .kicker, .record .kicker { font-size: 12px; font-weight: 700; color: #FFB866; text-transform: uppercase; letter-spacing: 0.08em; }
+.ladder { display: flex; flex-direction: column; background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 4px 14px; }
+.rung { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--track); font-size: 15px; }
+.rung:last-child { border-bottom: none; }
+.rung-n { width: 34px; height: 34px; border-radius: 50%; background: var(--track); color: var(--muted); display: flex; align-items: center; justify-content: center; font-family: var(--digits); font-weight: 700; font-size: 17px; flex-shrink: 0; }
+.rung.passed .rung-n { background: var(--good); color: #FFFFFF; }
+.rung.next .rung-n { background: var(--accent); color: var(--ink); }
+.year-card { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tiles.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tiles > div { background: var(--bg); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 2px; font-size: 16px; }
+.pill-teal.grey { color: var(--ink-2); background: var(--track); }
+.weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.weekdays button { height: 44px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--card); font-size: 14px; font-weight: 600; }
+.weekdays button[aria-pressed="true"] { border: none; background: var(--accent); font-weight: 700; }
+.months { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; align-items: end; height: 100px; }
+.month { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-end; gap: 4px; font-size: 10px; color: var(--muted); text-align: center; height: 100%; }
+.month-bar { background: var(--accent); border-radius: 4px 4px 0 0; }
+.record.level-up { background: linear-gradient(135deg, #1B1B1F, #3A2A12); }

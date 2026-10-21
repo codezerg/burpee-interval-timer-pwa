@@ -110,7 +110,6 @@ async function importBackup() {
     + `${data.workouts.length} workouts, ${data.sessions.length} sessions.`;
   if (!confirm(msg)) return;
   store.importData(data);
-  audio.setVolume(s().volume);
   resetTo('home');
   toast('Backup restored');
 }
@@ -118,7 +117,6 @@ async function importBackup() {
 function resetData() {
   if (!confirm('Delete all workouts and history on this phone? This cannot be undone.')) return;
   store.resetAll();
-  audio.setVolume(s().volume);
   resetTo('home');
   toast('All data reset');
 }
@@ -150,13 +148,25 @@ export function Settings() {
           Seg([[0, 'Off'], [3, '3 s'], [5, '5 s'], [10, '10 s']], () => s().countdown, (v) => set({ countdown: v })),
         ),
         div({ class: 'stack' },
+          strong('Sound'),
+          Seg(Object.entries(audio.THEMES).map(([id, t]) => [id, t.label]), () => s().soundTheme, (v) => {
+            set({ soundTheme: v });
+            audio.unlock();
+            audio.play('beep', 0, v);
+          }),
+          div({ class: 'between' },
+            span({ class: 'small muted' }, 'Tap a sound to hear it.'),
+            button({ class: 'link-btn', style: 'color:var(--accent-ink)', onclick: () => { audio.unlock(); audio.play('finish'); } }, 'Hear the finish ›'),
+          ),
+        ),
+        div({ class: 'stack' },
           div({ class: 'between' },
             strong('Beep volume'),
             button({ class: 'btn small ghost', style: 'height:36px;font-size:13px', onclick: testBeep }, 'Test beep'),
           ),
           input({
             type: 'range', min: 0.1, max: 1, step: 0.05, value: s().volume, 'aria-label': 'Beep volume',
-            oninput: (e) => { const v = Number(e.target.value); audio.setVolume(v); set({ volume: v }); },
+            oninput: (e) => set({ volume: Number(e.target.value) }),
             onchange: testBeep,
           }),
         ),

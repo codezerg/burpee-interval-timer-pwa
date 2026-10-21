@@ -14,6 +14,9 @@ import { Summary } from './screens/summary.js';
 import { History } from './screens/history.js';
 import { Settings } from './screens/settings.js';
 import { TakeBreak, WelcomeBack, lastSession } from './screens/rest.js';
+import { Levels } from './screens/levels.js';
+import { WeekReview, YearRecap } from './screens/recap.js';
+import { weekStart } from './stats.js';
 
 const SCREENS = {
   home: Home,
@@ -26,6 +29,9 @@ const SCREENS = {
   settings: Settings,
   break: TakeBreak,
   welcome: WelcomeBack,
+  levels: Levels,
+  review: WeekReview,
+  year: YearRecap,
 };
 
 const app = document.getElementById('app');
@@ -58,7 +64,7 @@ onBack(() => {
 // When the app comes back to the screen, check for a new deploy. Reload right
 // away on a calm screen; otherwise wait until the next visit to Home.
 let updateReady = false;
-const CALM_SCREENS = ['home', 'history', 'settings', 'detail', 'howto'];
+const CALM_SCREENS = ['home', 'history', 'levels', 'settings', 'detail', 'howto'];
 
 async function checkForUpdate() {
   if (updateReady || !(await backup.updateAvailable())) return;
@@ -73,17 +79,29 @@ van.derive(() => {
   if (route.val.name === 'home' && updateReady && !isActive()) location.reload();
 });
 
-// Back after a long gap without a break? Offer a gentle restart, once per gap.
+// On opening the app (or coming back to it) on Home:
+//  - back after a long gap without a break? offer a gentle restart, once per gap
+//  - first open of a new week? show the Monday review of last week
 const WELCOME_AFTER_DAYS = 8;
-function maybeWelcomeBack() {
+function onOpen() {
   if (isActive() || top().name !== 'home' || store.activeBreak()) return;
   const last = lastSession();
-  if (!last || store.data.ui.welcomeSeenFor === last.id) return;
-  if (Date.now() - last.startedAt >= WELCOME_AFTER_DAYS * 864e5) go('welcome');
+  if (!last) return;
+  if (store.data.ui.welcomeSeenFor !== last.id && Date.now() - last.startedAt >= WELCOME_AFTER_DAYS * 864e5) {
+    go('welcome');
+    return;
+  }
+  const thisWeek = weekStart(Date.now(), store.settings().weekStartsOn);
+  const hadEarlierWeek = store.data.sessions.some((s) => s.startedAt < thisWeek);
+  if (hadEarlierWeek && store.data.ui.reviewedWeek !== thisWeek) go('review');
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) maybeWelcomeBack(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) onOpen(); });
 
-audio.setVolume(store.settings().volume);
-maybeWelcomeBack();
+// Keep the sound engine in step with Settings (also after import/reset).
+van.derive(() => {
+  audio.setVolume(store.settings().volume);
+  audio.setTheme(store.settings().soundTheme);
+});
+onOpen();
 backup.registerServiceWorker();
 backup.initVersion();

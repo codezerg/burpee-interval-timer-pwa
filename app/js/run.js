@@ -6,6 +6,7 @@ import * as vanX from 'vanjs-ext';
 import * as store from './store.js';
 import * as audio from './audio.js';
 import { WorkoutRun } from './engine.js';
+import { runPassed } from './levels.js';
 import { go, replace, pop, resetTo } from './router.js';
 import { toast } from './components.js';
 
@@ -108,6 +109,7 @@ function endRun() {
     activeSec: st.elapsed,
     pausedSec: st.pausedSec,
     pauses: run.pauses,
+    finished: run.state === 'finished',
     startedAt,
     endedAt: Date.now(),
   };
@@ -152,6 +154,7 @@ export function saveResult(r) {
     ...(r.feel ? { feel: r.feel } : {}),
     ...(r.pain?.length ? { pain: r.pain } : {}),
     ...(r.reduced ? { reduced: true } : {}),
+    ...(r.levelTest ? { levelTest: { type: r.levelTest.type, level: r.levelTest.level, passed: runPassed(r) } } : {}),
     ...(r.catchUpOf ? { catchUpOf: r.catchUpOf } : {}),
   });
   resetTo('home');

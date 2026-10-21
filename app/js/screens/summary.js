@@ -7,7 +7,9 @@ import * as store from '../store.js';
 import * as stats from '../stats.js';
 import * as plan from '../plan.js';
 import { newRecords, suggestion } from '../motivation.js';
+import { LEVELS, runPassed } from '../levels.js';
 import { duration, pace } from '../format.js';
+import { TYPES } from '../types.js';
 import { resetTo } from '../router.js';
 import { saveResult } from '../run.js';
 import { icon, Stepper, toast } from '../components.js';
@@ -75,8 +77,25 @@ function BodyCheck(r) {
   );
 }
 
+function LevelBanner(r) {
+  const { type, level } = r.levelTest;
+  const name = `${TYPES[type].name} level ${level} · ${LEVELS[type][level - 1].name}`;
+  if (runPassed(r)) {
+    return div({ class: 'record level-up' },
+      div({ class: 'icon' }, icon('trophy')),
+      div({ class: 'stack', style: 'gap:2px' },
+        span({ class: 'kicker' }, 'Level up!'),
+        span({ style: 'font-size:17px;font-weight:700' }, `You passed ${name}`)));
+  }
+  const why = !r.finished ? 'stopped before the end' : 'you paused';
+  return div({ class: 'suggest' },
+    b(`Not passed this time (${why}).`),
+    span({ class: 'small muted' }, 'It still counts as a workout. Retry the test whenever you feel ready.'));
+}
+
 function RecordBanner(r) {
   if (r.isCatchUp) return div({ class: 'view' });
+  if (r.levelTest) return LevelBanner(r);
   const recs = newRecords(store.data.sessions, { ...r, startedAt: r.startedAt }, store.settings().weekStartsOn);
   if (!recs.length || r.done <= 0) return div({ class: 'view' });
   const top = recs[0];

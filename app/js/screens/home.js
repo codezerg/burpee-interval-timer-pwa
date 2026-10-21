@@ -144,6 +144,20 @@ function WeekCard() {
   );
 }
 
+// "Today's plan" on the days picked in the Monday review.
+function PlanBanner() {
+  const now = Date.now();
+  const { days, cue } = store.data.plan;
+  if (!days.includes(new Date(now).getDay()) || store.activeBreak()) return [];
+  const doneToday = stats.inRange(store.data.sessions, stats.dayStart(now), stats.addDays(stats.dayStart(now), 1)).length > 0;
+  return div({ class: `plan${doneToday ? ' done' : ''}` },
+    icon(doneToday ? 'checkSmall' : 'calendar'),
+    doneToday
+      ? span(b('Today’s plan: done.'), ' Nice.')
+      : span(b('Today’s plan: '), cue || 'a workout'),
+  );
+}
+
 // "Time for a recovery week" (proposal 2.8 a). Shown once due, until started
 // or "Not this week". Nothing changes until the user taps Start.
 function RecoveryReminder() {
@@ -243,6 +257,7 @@ export function Home() {
         const p = store.activeBreak();
         return p ? BreakCard(p) : WeekCard();
       },
+      () => div({ class: 'view' }, PlanBanner()),
       () => div({ class: 'view' }, store.activeBreak() ? [] : RecoveryReminder()),
       () => div({ class: 'view' }, store.openCatchUps().slice(0, 2).map(CatchUpCard)),
       div({ class: 'between', style: 'padding-top:4px' },
