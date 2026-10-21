@@ -27,7 +27,7 @@ const DEFAULT_SETTINGS = {
   recoveryEvery: 4,    // remind after N training weeks; 0 = off
   recoveryPct: 55,     // recovery-week goal, % of the normal goal
   painCheck: true,     // ask "Anything hurting?" after a Hard rating
-  soundTheme: 'glass', // glass | chime | pop | classic (see audio.js THEMES)
+  soundTheme: 'drum',  // drum | glass | chime | classic (see audio.js THEMES)
 };
 
 const DEFAULT_UI = {
@@ -70,7 +70,7 @@ function load() {
         periods: parsed.periods || [],
         plan: { days: [], cue: '', ...parsed.plan },
         challenges: parsed.challenges || {},
-        settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
+        settings: { ...DEFAULT_SETTINGS, ...parsed.settings, ...(parsed.settings?.soundTheme === 'pop' ? { soundTheme: 'drum' } : {}) },
         ui: { ...DEFAULT_UI, ...parsed.ui },
       };
     }

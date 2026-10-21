@@ -12,7 +12,7 @@ A phone app for doing burpees at a steady pace and getting better over time. Ins
 - **Weekly goal:** in burpees, minutes or both. The app also tracks history per burpee type (Standard, 6-count, Navy SEAL, Other), a weekly streak, records and badges.
 - **Pause or stop** at any time. What you did is saved, and you can catch up the rest later.
 - **Levels and challenges:** a level ladder per burpee type (pass a test without pausing), a monthly challenge, a Monday review with session planning, and a Year in Burpees recap in December.
-- **Sounds:** four styles (Glass, Chime, Pop, Classic), all generated in code.
+- **Sounds:** four styles (Drum, Glass, Chime, Classic), all generated in code; Drum is the default.
 - **Motivation:** a weekly streak with shields, new-record banners, "How did it feel?" with small make-it-harder suggestions (max ~10% a week), badges and pace progress.
 - **Recovery weeks:** you start one any time you like, and the app reminds you after 4 training weeks.
 

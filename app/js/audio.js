@@ -4,7 +4,7 @@ let ctx = null;
 let master = null;
 let volume = 0.8;
 let muted = false;
-let theme = 'glass';
+let theme = 'drum';
 let pending = [];
 
 function ensure() {
@@ -63,9 +63,38 @@ export function isMuted() { return muted; }
 // wave type, gain g, start offset `at`, optional pitch `sweep` to a target
 // frequency over `sweepT` seconds, extra `partials` [[ratio, gain]] for a
 // bell-like timbre, and `decay`: 'ring' (natural fade) or 'flat' (beep).
+// A `noise` note is filtered white noise instead of a tone (drum skins,
+// snares, cymbals): `filter` type, `ff` cutoff/centre (Hz), `q`.
 const NOTE = { C6: 1046.5, E6: 1318.5, G6: 1568, A6: 1760, C7: 2093, E7: 2637 };
 
+// Drum pieces. Tuned above ~150 Hz so phone speakers can play them.
+const SNARE = [
+  { noise: true, filter: 'bandpass', ff: 1900, q: 0.8, d: 0.17, g: 1.0 },
+  { noise: true, filter: 'highpass', ff: 6500, d: 0.06, g: 0.35 },
+  { f: 250, sweep: 175, sweepT: 0.05, d: 0.11, type: 'triangle', g: 0.75, decay: 'ring' },
+];
+const RIM = [
+  { f: 1050, sweep: 820, sweepT: 0.02, d: 0.06, type: 'sine', g: 0.6, decay: 'ring' },
+  { noise: true, filter: 'bandpass', ff: 3800, q: 2.5, d: 0.035, g: 0.5 },
+];
+const tom = (f, at) => [
+  { f, sweep: f * 0.62, sweepT: 0.12, d: 0.24, type: 'triangle', g: 0.85, at, decay: 'ring' },
+  { noise: true, filter: 'bandpass', ff: f * 4, q: 1.2, d: 0.06, g: 0.35, at },
+];
+const at = (notes, t, gain = 1) => notes.map((n) => ({ ...n, at: (n.at || 0) + t, g: n.g * gain }));
+
 export const THEMES = {
+  // Snare hit per burpee, rim clicks to count down, tom fill + crash to finish (default).
+  drum: {
+    label: 'Drum',
+    beep: SNARE,
+    tick: RIM,
+    finish: [
+      ...tom(330, 0), ...tom(262, 0.11), ...tom(196, 0.22),
+      ...at(SNARE, 0.36, 0.6),
+      { noise: true, filter: 'highpass', ff: 4500, d: 1.5, g: 0.4, at: 0.36 },
+    ],
+  },
   // Short, clean glass tap with a fast, soft decay, in the spirit of phone and
   // watch alerts (default). Original sounds, not copies of any product's.
   glass: {
@@ -94,17 +123,6 @@ export const THEMES = {
       { f: NOTE.C7, d: 1.3, type: 'sine', g: 0.55, at: 0.39, partials: [[2, 0.3], [3.01, 0.1]], decay: 'ring' },
     ],
   },
-  // Quick rising blip, like a modern app notification.
-  pop: {
-    label: 'Pop',
-    beep: [{ f: 520, sweep: 1500, sweepT: 0.05, d: 0.2, type: 'sine', g: 0.7, partials: [[2, 0.15]], decay: 'ring' }],
-    tick: [{ f: 420, sweep: 900, sweepT: 0.03, d: 0.09, type: 'sine', g: 0.45, decay: 'ring' }],
-    finish: [
-      { f: 520, sweep: 1500, sweepT: 0.05, d: 0.2, type: 'sine', g: 0.6, at: 0, decay: 'ring' },
-      { f: 660, sweep: 1900, sweepT: 0.05, d: 0.2, type: 'sine', g: 0.6, at: 0.14, decay: 'ring' },
-      { f: 800, sweep: 2400, sweepT: 0.06, d: 0.7, type: 'sine', g: 0.65, at: 0.28, partials: [[2, 0.15]], decay: 'ring' },
-    ],
-  },
   // The original square-wave beeps.
   classic: {
     label: 'Classic',
@@ -117,6 +135,22 @@ export const THEMES = {
     ],
   },
 };
+
+// For tests: render one sound offline and return the samples.
+export async function renderOffline(kind, themeId) {
+  const off = new OfflineAudioContext(1, 48000 * 2.5, 48000);
+  const saved = { ctx, master, noiseBuffer };
+  ctx = off;
+  noiseBuffer = null;
+  master = off.createGain();
+  master.connect(off.destination);
+  try {
+    THEMES[themeId][kind].flatMap((n) => note(0.01 + (n.at || 0), n));
+    return (await off.startRendering()).getChannelData(0);
+  } finally {
+    ({ ctx, master, noiseBuffer } = saved);
+  }
+}
 
 function voice(start, f, n, gain) {
   const osc = ctx.createOscillator();
@@ -138,7 +172,31 @@ function voice(start, f, n, gain) {
   return osc;
 }
 
+let noiseBuffer = null;
+function noiseVoice(start, n) {
+  if (!noiseBuffer) {
+    noiseBuffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const ch = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = n.filter;
+  filter.frequency.value = n.ff;
+  if (n.q) filter.Q.value = n.q;
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(0.0001, start);
+  env.gain.linearRampToValueAtTime(n.g, start + 0.002);
+  env.gain.exponentialRampToValueAtTime(0.0001, start + n.d);
+  src.connect(filter).connect(env).connect(master);
+  src.start(start);
+  src.stop(start + n.d + 0.03);
+  return src;
+}
+
 function note(start, n) {
+  if (n.noise) return [noiseVoice(start, n)];
   const oscs = [voice(start, n.f, n, n.g)];
   for (const [ratio, rel] of n.partials || []) oscs.push(voice(start, n.f * ratio, { ...n, d: n.d * 0.6 }, n.g * rel));
   return oscs;
