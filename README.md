@@ -11,6 +11,7 @@ A phone app for doing burpees at a steady pace and getting better over time. Ins
 - **Progress** comes from slowly adding burpees or lowering the seconds per burpee.
 - **Weekly goal:** in burpees, minutes or both. The app also tracks history per burpee type (Standard, 6-count, Navy SEAL, Other), a weekly streak, records and badges.
 - **Pause or stop** at any time. What you did is saved, and you can catch up the rest later.
+- **Motivation:** a weekly streak with shields, new-record banners, "How did it feel?" with small make-it-harder suggestions (max ~10% a week), badges and pace progress.
 - **Recovery weeks:** you start one any time you like, and the app reminds you after 4 training weeks.
 
 ## Status
@@ -21,7 +22,7 @@ A phone app for doing burpees at a steady pace and getting better over time. Ins
 | Phase 1: workouts, timer, beeps, saving sessions | Done (2026-10-21) |
 | Phase 2: weekly goal, history, records | Done (2026-10-21) |
 | Phase 3: PWA install (manifest, offline, icons), export/import | Done (2026-10-21) |
-| Phase 4: motivation features and recovery weeks | – |
+| Phase 4: motivation features and recovery weeks | Done (2026-10-21) |
 | Phase 5: Monday review, levels, monthly challenge | – |
 
 ## Live
@@ -62,7 +63,9 @@ app/
   js/audio.js       Beeps via Web Audio, scheduled ahead on the audio clock
   js/store.js       Workouts, sessions, settings: one VanX reactive object, saved to localStorage
   js/types.js       Burpee types, how-to text, colors
-  js/stats.js       Weekly goal, history series, records (pure, unit-tested)
+  js/stats.js       Weeks, goal progress, history series (pure, unit-tested)
+  js/plan.js        Recovery weeks, breaks, restart ramps, streak + shields (pure, unit-tested)
+  js/motivation.js  Records, make-it-harder suggestions, badges, pace progress (pure, unit-tested)
   js/backup.js      Backup export/import, install button, new-version check
   sw.js             Service worker: offline + always-fresh updates
   vendor/           VanJS 1.6.1 + VanX 0.6.3, copied unmodified (see vendor/README.md)

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   weekStart, addDays, summarize, goalStatus, weeklySeries, dailySeries,
-  monthlySeries, goalWeeks, records, minutes,
+  monthlySeries, minutes,
 } from '../app/js/stats.js';
 
 const at = (y, m, d, h = 12) => new Date(y, m - 1, d, h).getTime();
@@ -64,27 +64,4 @@ test('dailySeries and monthlySeries', () => {
   assert.deepEqual(days.map((d) => d.sum.burpees), [15, 0, 7, 0, 0, 0, 0]);
   const months = monthlySeries([...list, session(at(2026, 9, 3), 50)], { count: 2, now: at(2026, 10, 21) });
   assert.deepEqual(months.map((m) => m.sum.burpees), [50, 22]);
-});
-
-test('goalWeeks counts weeks from the first workout to now', () => {
-  const settings = { goalType: 'burpees', goalBurpees: 50, goalMinutes: 30, weekStartsOn: 1 };
-  const list = [session(at(2026, 10, 5), 60), session(at(2026, 10, 13), 20), session(at(2026, 10, 20), 55)];
-  assert.deepEqual(goalWeeks(list, settings, at(2026, 10, 21)), { hit: 2, total: 3 });
-  assert.deepEqual(goalWeeks([], settings), { hit: 0, total: 0 });
-});
-
-test('records per type ignore partial and catch-up sessions for fastest pace', () => {
-  const list = [
-    session(at(2026, 10, 5), 40, { pace: 15 }),
-    session(at(2026, 10, 6), 28, { pace: 12, target: 40 }), // partial: not a pace record
-    session(at(2026, 10, 6, 18), 12, { pace: 10, catchUpOf: 'x' }), // catch-up: not a pace record
-    session(at(2026, 10, 14), 41, { pace: 14.5 }),
-    session(at(2026, 10, 15), 5, { type: 'seal', pace: 30 }),
-  ];
-  const r = records(list, 'standard');
-  assert.equal(r.total, 40 + 28 + 12 + 41);
-  assert.equal(r.most, 41);
-  assert.equal(r.fastest, 14.5);
-  assert.equal(r.bestWeek, 80);
-  assert.equal(records(list, 'other'), null);
 });

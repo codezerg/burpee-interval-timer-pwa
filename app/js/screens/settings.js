@@ -4,7 +4,7 @@ import van from 'vanjs-core';
 import * as store from '../store.js';
 import * as audio from '../audio.js';
 import * as backup from '../backup.js';
-import { resetTo } from '../router.js';
+import { resetTo, go } from '../router.js';
 import { Nav, Seg, Stepper, toast } from '../components.js';
 
 const { b, button, div, h1, input, main, span } = van.tags;
@@ -39,6 +39,39 @@ function GoalGroup() {
       strong('Week starts on'),
       Seg([[1, 'Monday'], [0, 'Sunday']], () => s().weekStartsOn, (v) => set({ weekStartsOn: v })),
     ),
+  );
+}
+
+function RecoveryGroup() {
+  const row = (title, child) => div({ class: 'between' }, strong(title), child);
+  return div({ class: 'group' },
+    () => {
+      const kind = store.thisWeek().kind;
+      if (store.activeBreak()) {
+        return row('On a break', button({ class: 'btn small ghost', style: 'height:36px', onclick: () => go('welcome', { fromBreak: true }) }, 'I’m back'));
+      }
+      return kind === 'recovery'
+        ? row('Recovery week is on', button({ class: 'btn small ghost', style: 'height:36px', onclick: () => { store.endRecovery(); toast('Recovery week ended'); } }, 'End it'))
+        : row('Recovery week', button({ class: 'btn small teal', style: 'height:36px', onclick: () => { store.startRecovery(); toast('Recovery week started'); } }, 'Start now'));
+    },
+    div({ class: 'stack' },
+      strong('Remind me after'),
+      Seg([[0, 'Off'], [4, '4 weeks'], [5, '5 weeks'], [6, '6 weeks']], () => s().recoveryEvery, (v) => set({ recoveryEvery: v })),
+    ),
+    div({ class: 'stack' },
+      strong('Recovery week goal'),
+      Seg([[40, '40%'], [55, '55%'], [70, '70%']], () => s().recoveryPct, (v) => set({ recoveryPct: v })),
+      span({ class: 'small muted' }, () => `Of your normal goal: ${s().goalType === 'minutes'
+        ? `${Math.round(s().goalMinutes * s().recoveryPct / 100)} min` : `about ${Math.round(s().goalBurpees * s().recoveryPct / 500) * 5} burpees`}.`),
+    ),
+    row('Ask “Anything hurting?” after Hard', button({
+      class: 'switch', role: 'switch', 'aria-label': 'Ask about pain after a Hard rating',
+      'aria-checked': () => String(s().painCheck), onclick: () => set({ painCheck: !s().painCheck }),
+    })),
+    () => (store.activeBreak()
+      ? div({ class: 'view' })
+      : button({ class: 'text-btn between', style: 'padding:14px 16px', onclick: () => go('break') },
+        span('Take a break (sick / holiday)'), span({ class: 'muted' }, '›'))),
   );
 }
 
@@ -102,6 +135,10 @@ export function Settings() {
 
       groupLabel('Weekly goal'),
       GoalGroup(),
+
+      groupLabel('Recovery'),
+      RecoveryGroup(),
+      note('Recovery weeks only start when you start one. Hitting the easier goal keeps your streak.'),
 
       groupLabel('App'),
       div({ class: 'group' }, () => InstallBlock()),

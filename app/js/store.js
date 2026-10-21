@@ -5,6 +5,8 @@
 import van from 'vanjs-core';
 import * as vanX from 'vanjs-ext';
 import { sameDay } from './format.js';
+import { weekStart, addDays } from './stats.js';
+import { weekKind } from './plan.js';
 
 const KEY = 'burpee-interval-timer:v1';
 
@@ -18,6 +20,14 @@ const DEFAULT_SETTINGS = {
   goalBurpees: 150,
   goalMinutes: 30,
   weekStartsOn: 1,     // 1 = Monday, 0 = Sunday
+  recoveryEvery: 4,    // remind after N training weeks; 0 = off
+  recoveryPct: 55,     // recovery-week goal, % of the normal goal
+  painCheck: true,     // ask "Anything hurting?" after a Hard rating
+};
+
+const DEFAULT_UI = {
+  recoveryDismissedWeek: null, // "Not this week" on the recovery reminder
+  welcomeSeenFor: null,        // last session id the Welcome back screen was shown for
 };
 
 function seed() {
@@ -30,7 +40,9 @@ function seed() {
       { id: uid(), type: 'seal', count: 5, pace: 30, createdAt: now + 2 },
     ],
     sessions: [],
+    periods: [],
     settings: { ...DEFAULT_SETTINGS },
+    ui: { ...DEFAULT_UI },
   };
 }
 
@@ -47,7 +59,9 @@ function load() {
         version: 1,
         workouts: parsed.workouts || [],
         sessions: parsed.sessions || [],
+        periods: parsed.periods || [],
         settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
+        ui: { ...DEFAULT_UI, ...parsed.ui },
       };
     }
   } catch (err) {
@@ -81,6 +95,14 @@ export function saveWorkout(w) {
   const existing = getWorkout(w.id);
   if (existing) Object.assign(existing, w, { updatedAt: Date.now() });
   else data.workouts.push({ ...w, id: uid(), createdAt: Date.now() });
+}
+
+// Apply a "make it harder" suggestion and remember it for the weekly cap.
+export function bumpWorkout(id, option) {
+  const w = getWorkout(id);
+  if (!w) return;
+  w[option.change] = option.to;
+  w.bumps = [...(w.bumps || []).filter((b) => b.at > Date.now() - 30 * 864e5), { at: Date.now(), pct: option.pct }];
 }
 
 export function deleteWorkout(id) {
@@ -130,6 +152,48 @@ export function deleteSession(sessionId) {
   vanX.replace(data.sessions, (list) => list.filter((s) => s.id !== sessionId && s.catchUpOf !== sessionId));
 }
 
+// ---- recovery weeks, breaks, restart ramps (see plan.js)
+const sd = () => data.settings.weekStartsOn;
+
+export const thisWeek = (now = Date.now()) => weekKind(weekStart(now, sd()), data.periods, now);
+
+export function activeBreak(now = Date.now()) {
+  return data.periods.find((p) => p.kind === 'break' && p.start <= now && (p.end == null || p.end > now)) || null;
+}
+
+export function startRecovery(now = Date.now()) {
+  const start = weekStart(now, sd());
+  data.periods.push({ kind: 'recovery', start, end: addDays(start, 7), pct: data.settings.recoveryPct });
+}
+
+export function endRecovery(now = Date.now()) {
+  const p = data.periods.find((x) => x.kind === 'recovery' && x.start <= now && x.end > now);
+  if (p) p.end = now;
+}
+
+// weeks: 1, 2 or null ("until I'm back")
+export function startBreak(reason, weeks, now = Date.now()) {
+  data.periods.push({ kind: 'break', reason, start: now, end: weeks ? addDays(now, 7 * weeks) : null });
+}
+
+export function endBreak(now = Date.now()) {
+  const p = activeBreak(now);
+  if (p) p.end = now;
+  return p;
+}
+
+export function startRamp(factors, now = Date.now()) {
+  data.periods.push({ kind: 'ramp', start: weekStart(now, sd()), factors });
+}
+
+export function dismissRecoveryReminder(now = Date.now()) {
+  data.ui.recoveryDismissedWeek = weekStart(now, sd());
+}
+
+export function markWelcomeSeen(sessionId) {
+  data.ui.welcomeSeenFor = sessionId;
+}
+
 export function resetAll() {
   vanX.replace(data, seed());
 }
@@ -168,6 +232,8 @@ export function importData(backup) {
     version: 1,
     workouts: backup.workouts,
     sessions: backup.sessions,
+    periods: backup.periods || [],
     settings: { ...DEFAULT_SETTINGS, ...backup.settings },
+    ui: { ...DEFAULT_UI, ...backup.ui },
   });
 }

@@ -23,6 +23,7 @@ export class WorkoutRun {
     this.anchorT = 0;
     this.anchorClock = 0;
     this.pausedSec = 0;
+    this.pauses = 0;
     this.pauseStartedAt = null;
   }
 
@@ -52,6 +53,7 @@ export class WorkoutRun {
     if (this.state !== 'countdown' && this.state !== 'running') return;
     this.anchorT = this.t();
     this.state = 'paused';
+    if (this.anchorT >= 0) this.pauses += 1; // pausing in the get-ready countdown doesn't count
     this.pauseStartedAt = this.clock();
     this.sounds.cancel();
   }

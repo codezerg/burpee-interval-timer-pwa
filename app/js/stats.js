@@ -96,39 +96,4 @@ export function monthlySeries(sessions, { count = 12, now = Date.now() } = {}) {
   return out;
 }
 
-// Weeks (since the first workout, up to and including the current week) where the goal was hit.
-export function goalWeeks(sessions, settings, now = Date.now()) {
-  if (!sessions.length) return { hit: 0, total: 0 };
-  const first = weekStart(Math.min(...sessions.map((s) => s.startedAt)), settings.weekStartsOn);
-  const current = weekStart(now, settings.weekStartsOn);
-  let hit = 0, total = 0;
-  for (let start = first; start <= current; start = addDays(start, 7)) {
-    total += 1;
-    if (goalStatus(summarize(inRange(sessions, start, addDays(start, 7))), settings).hit) hit += 1;
-  }
-  return { hit, total };
-}
-
-// Records for one burpee type.
-//  most:    most burpees in a single session (catch-ups count on their own)
-//  fastest: lowest pace of a fully completed, non-catch-up session
-//  bestWeek: most burpees of this type in one week
-export function records(sessions, type, startDay = 1) {
-  const list = sessions.filter((s) => s.type === type);
-  if (!list.length) return null;
-  const complete = list.filter((s) => !s.catchUpOf && s.done >= s.target);
-  const weeks = new Map();
-  for (const s of list) {
-    const k = weekStart(s.startedAt, startDay);
-    weeks.set(k, (weeks.get(k) || 0) + s.done);
-  }
-  return {
-    total: list.reduce((n, s) => n + s.done, 0),
-    most: Math.max(...list.map((s) => s.done)),
-    fastest: complete.length ? Math.min(...complete.map((s) => s.pace)) : null,
-    bestWeek: Math.max(...weeks.values()),
-    sessions: list.length,
-  };
-}
-
 export const DAY_MS = DAY;

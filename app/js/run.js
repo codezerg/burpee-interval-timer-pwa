@@ -107,6 +107,7 @@ function endRun() {
     done: run.done(),
     activeSec: st.elapsed,
     pausedSec: st.pausedSec,
+    pauses: run.pauses,
     startedAt,
     endedAt: Date.now(),
   };
@@ -147,6 +148,10 @@ export function saveResult(r) {
     endedAt: r.endedAt,
     activeSec: Math.round(r.activeSec),
     pausedSec: Math.round(r.pausedSec),
+    pauses: r.pauses,
+    ...(r.feel ? { feel: r.feel } : {}),
+    ...(r.pain?.length ? { pain: r.pain } : {}),
+    ...(r.reduced ? { reduced: true } : {}),
     ...(r.catchUpOf ? { catchUpOf: r.catchUpOf } : {}),
   });
   resetTo('home');

@@ -1,17 +1,14 @@
-// Countdown, running and paused screens, plus the after-workout summary.
+// Countdown, running and paused screens.
 // The run screen only rebuilds when the phase changes; the clock texts and
 // rings are bound to runUi.status, which the run loop refreshes every frame.
 
 import van from 'vanjs-core';
-import * as store from '../store.js';
 import { clock, duration, pace } from '../format.js';
-import { go, resetTo } from '../router.js';
-import {
-  runUi, pauseRun, resumeRun, stopRun, cancelRun, skipCountdown, toggleMute, saveResult,
-} from '../run.js';
-import { icon, Stepper } from '../components.js';
+import { go } from '../router.js';
+import { runUi, pauseRun, resumeRun, stopRun, cancelRun, skipCountdown, toggleMute } from '../run.js';
+import { icon } from '../components.js';
 
-const { b, button, div, h1, h2, main, span } = van.tags;
+const { b, button, div, h2, main, span } = van.tags;
 const { svg, circle } = van.tags('http://www.w3.org/2000/svg');
 
 const BIG_C = 2 * Math.PI * 118;
@@ -125,59 +122,4 @@ export function RunScreen() {
     const phase = runUi.phase.val;
     return phase === 'countdown' ? Countdown() : Running(phase === 'paused');
   });
-}
-
-// ------------------------------------------------------------------ summary
-export function Summary({ result: r }) {
-  const complete = r.done >= r.target;
-  const left = () => r.target - r.done;
-
-  const discard = () => {
-    if (!confirm('Discard this workout? It will not be saved.')) return;
-    resetTo('home');
-  };
-
-  return main({ class: 'screen white' },
-    div({ class: 'done-head' },
-      div({ class: `check${complete ? '' : ' partial'}` }, icon(complete ? 'check' : 'pauseSmall')),
-      div({ class: 'stack', style: 'gap:2px' },
-        h1({ style: 'font-size:24px' }, complete ? 'Workout complete!' : 'Stopped early'),
-        span({ class: 'small muted' }, complete ? `${r.title} · every ${pace(r.pace)}` : 'Good effort. What you did counts.'),
-      ),
-    ),
-
-    div({ class: 'stats' },
-      div(span({ class: 'label' }, 'Burpees'), span({ class: 'digits' }, () => (r.done >= r.target ? r.done : `${r.done} / ${r.target}`))),
-      div(span({ class: 'label' }, 'Time'), span({ class: 'digits' }, duration(r.activeSec))),
-      r.pausedSec >= 1
-        ? div(span({ class: 'label' }, 'Paused'), span({ class: 'digits' }, duration(r.pausedSec)))
-        : div(span({ class: 'label' }, 'Pace'), span({ class: 'digits' }, pace(r.pace))),
-    ),
-
-    div({ class: 'between card flat', style: 'padding:10px 10px 10px 16px' },
-      div({ class: 'stack', style: 'gap:2px' },
-        span({ style: 'font-weight:600' }, 'Burpees done'),
-        span({ class: 'small muted' }, 'Fix it if you missed some'),
-      ),
-      Stepper({
-        value: () => r.done, min: 0, max: r.target, label: 'burpees done',
-        onStep: (d) => { r.done = Math.min(r.target, Math.max(0, r.done + d)); },
-      }),
-    ),
-
-    () => div({ class: 'view' }, left() > 0 && !r.isCatchUp
-      ? div({ class: 'note' }, b(`${left()} left. `),
-        `Home will offer a short catch-up workout with just these ${left()} burpees`,
-        store.settings().catchUpUntil === 'endOfDay' ? ' until the end of today.' : '.')
-      : []),
-
-    div({ class: 'grow' }),
-    div({ class: 'stack', style: 'gap:8px' },
-      button({
-        class: 'btn block', disabled: () => r.done <= 0, style: () => (r.done <= 0 ? 'opacity:.5' : ''),
-        onclick: () => saveResult(r),
-      }, 'Save'),
-      button({ class: 'btn plain block', onclick: discard }, 'Discard'),
-    ),
-  );
 }
