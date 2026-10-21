@@ -18,22 +18,46 @@ A phone app for doing burpees at a steady pace and getting better over time. Ins
 | Step | State |
 | --- | --- |
 | Proposal and design | Done (2026-10-21) |
-| Phase 1: workouts, timer, beeps, saving sessions | Not started |
+| Phase 1: workouts, timer, beeps, saving sessions | Done (2026-10-21) |
 | Phase 2: weekly goal, history, records | – |
 | Phase 3: PWA install (manifest, offline, icons), export/import | – |
 | Phase 4: motivation features and recovery weeks | – |
 | Phase 5: Monday review, levels, monthly challenge | – |
 
+## Run it locally
+
+No install, no build. Serve the `app/` folder with any static web server:
+
+```
+npm start                                   # = python -m http.server 8080 --directory app
+```
+
+Then open http://localhost:8080. Use the browser's phone view (DevTools device toolbar) for a phone-sized layout.
+
+Tests for the timer engine (Node 20+):
+
+```
+npm test
+```
+
 ## Repo layout
 
 ```
+app/
+  index.html        App shell
+  styles.css        All styles (light theme, tokens from the mockups)
+  js/main.js        Screens, navigation, run loop, wake lock
+  js/engine.js      Workout timing (pure logic, unit-tested)
+  js/audio.js       Beeps via Web Audio, scheduled ahead on the audio clock
+  js/store.js       Workouts, sessions, settings in localStorage
+  js/views.js       Screen templates
+  js/types.js       Burpee types and how-to text
+tests/              node:test unit tests
 docs/
   proposal.txt      Full spec: features, screens, technical notes, plan, decisions
   mockups/          Static HTML mockups of every screen. Open index.html in a browser.
   design-canvas/    Source files of the mockups (Claude design-canvas format, needs its viewer)
 ```
-
-The app itself will live in `app/` (index.html, manifest.json, sw.js, icons).
 
 ## How it will work
 

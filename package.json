@@ -1,0 +1,10 @@
+{
+  "name": "burpee-interval-timer-pwa",
+  "private": true,
+  "type": "module",
+  "description": "Personal installable web app (PWA): burpee interval timer with beeps. No dependencies, no build step.",
+  "scripts": {
+    "start": "python -m http.server 8080 --directory app",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
