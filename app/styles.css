@@ -40,6 +40,9 @@ button { cursor: pointer; touch-action: manipulation; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 a { color: var(--accent-ink); }
 
+/* Wrapper that adds no box of its own (screens, optional sections). */
+.view { display: contents; }
+
 #app {
   max-width: 480px;
   margin: 0 auto;

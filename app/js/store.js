@@ -1,5 +1,9 @@
-// Data saved on the phone only (localStorage). One JSON blob, versioned.
+// Data saved on the phone only (localStorage), held in one VanX reactive
+// object. Screens read it directly and update themselves when it changes;
+// a single van.derive writes it back to storage after every change.
 
+import van from 'vanjs-core';
+import * as vanX from 'vanjs-ext';
 import { sameDay } from './format.js';
 
 const KEY = 'burpee-interval-timer:v1';
@@ -34,17 +38,17 @@ export function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-let data = load();
-
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      parsed.settings = { ...DEFAULT_SETTINGS, ...parsed.settings };
-      parsed.workouts ||= [];
-      parsed.sessions ||= [];
-      return parsed;
+      return {
+        version: 1,
+        workouts: parsed.workouts || [],
+        sessions: parsed.sessions || [],
+        settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
+      };
     }
   } catch (err) {
     console.warn('Could not read saved data', err);
@@ -52,36 +56,35 @@ function load() {
   return seed();
 }
 
-function save() {
+export const data = vanX.reactive(load());
+
+// Persist on every change (VanX batches changes, so this runs once per update).
+van.derive(() => {
+  const json = JSON.stringify(vanX.compact(data));
   try {
-    localStorage.setItem(KEY, JSON.stringify(data));
+    localStorage.setItem(KEY, json);
   } catch (err) {
     console.warn('Could not save data', err);
   }
-}
-save();
+});
 
 // ---- settings
 export const settings = () => data.settings;
 export function updateSettings(patch) {
   Object.assign(data.settings, patch);
-  save();
 }
 
-// ---- workouts
-export const workouts = () => [...data.workouts].sort((a, b) => a.createdAt - b.createdAt);
+// ---- workouts (kept in creation order)
 export const getWorkout = (id) => data.workouts.find((w) => w.id === id);
 
 export function saveWorkout(w) {
   const existing = getWorkout(w.id);
   if (existing) Object.assign(existing, w, { updatedAt: Date.now() });
   else data.workouts.push({ ...w, id: uid(), createdAt: Date.now() });
-  save();
 }
 
 export function deleteWorkout(id) {
-  data.workouts = data.workouts.filter((w) => w.id !== id);
-  save();
+  vanX.replace(data.workouts, (list) => list.filter((w) => w.id !== id));
 }
 
 // ---- sessions
@@ -92,7 +95,6 @@ export const sessions = () => [...data.sessions].sort((a, b) => b.startedAt - a.
 export function addSession(s) {
   const session = { ...s, id: uid() };
   data.sessions.push(session);
-  save();
   return session;
 }
 
@@ -118,32 +120,27 @@ export function openCatchUps(now = Date.now()) {
     (untilDone || sameDay(s.startedAt, now)));
 }
 
-// Deletes a session and any catch-ups linked to it. Returns how many were removed.
-export function deleteSession(sessionId) {
-  const before = data.sessions.length;
-  data.sessions = data.sessions.filter((s) => s.id !== sessionId && s.catchUpOf !== sessionId);
-  save();
-  return before - data.sessions.length;
-}
-
 export function dismissCatchUp(sessionId) {
   const s = data.sessions.find((x) => x.id === sessionId);
-  if (s) { s.dismissed = true; save(); }
+  if (s) s.dismissed = true;
+}
+
+// Deletes a session and any catch-ups linked to it.
+export function deleteSession(sessionId) {
+  vanX.replace(data.sessions, (list) => list.filter((s) => s.id !== sessionId && s.catchUpOf !== sessionId));
 }
 
 export function resetAll() {
-  data = seed();
-  save();
+  vanX.replace(data, seed());
 }
 
 // ---- backup
 export function exportData() {
-  return JSON.stringify({ app: 'burpee-interval-timer', exportedAt: new Date().toISOString(), ...data }, null, 2);
+  return JSON.stringify({ app: 'burpee-interval-timer', exportedAt: new Date().toISOString(), ...vanX.compact(data) }, null, 2);
 }
 
 export function markBackedUp() {
   data.settings.lastBackupAt = Date.now();
-  save();
 }
 
 // Validates a backup file's text; throws with a readable message if it's wrong.
@@ -167,12 +164,10 @@ export function parseBackup(text) {
 }
 
 export function importData(backup) {
-  const { app, exportedAt, ...rest } = backup;
-  data = {
+  vanX.replace(data, {
     version: 1,
-    workouts: rest.workouts,
-    sessions: rest.sessions,
-    settings: { ...DEFAULT_SETTINGS, ...rest.settings },
-  };
-  save();
+    workouts: backup.workouts,
+    sessions: backup.sessions,
+    settings: { ...DEFAULT_SETTINGS, ...backup.settings },
+  });
 }

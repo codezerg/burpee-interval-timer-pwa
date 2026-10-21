@@ -4,7 +4,7 @@
 // falling back to the saved copy when offline. Google Fonts: saved copy first,
 // refreshed in the background. Bump SHELL_CACHE only when the file list changes.
 
-const SHELL_CACHE = 'burpee-shell-v2';
+const SHELL_CACHE = 'burpee-shell-v3';
 const FONT_CACHE = 'burpee-fonts-v1';
 const NETWORK_TIMEOUT_MS = 4000;
 
@@ -13,15 +13,24 @@ const SHELL = [
   'index.html',
   'styles.css',
   'manifest.webmanifest',
-  'js/main.js',
+  'js/app.js',
+  'js/router.js',
+  'js/run.js',
+  'js/components.js',
   'js/engine.js',
   'js/audio.js',
   'js/store.js',
-  'js/views.js',
   'js/types.js',
   'js/format.js',
   'js/backup.js',
   'js/stats.js',
+  'js/screens/home.js',
+  'js/screens/workout.js',
+  'js/screens/run.js',
+  'js/screens/history.js',
+  'js/screens/settings.js',
+  'vendor/van-1.6.1.js',
+  'vendor/van-x-0.6.3.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',

@@ -51,17 +51,21 @@ npm test
 
 ```
 app/
-  index.html        App shell
+  index.html        App shell + import map for VanJS/VanX
   styles.css        All styles (light theme, tokens from the mockups)
-  js/main.js        Screens, navigation, run loop, wake lock
+  js/app.js         Entry: mounts screens per route, Back handling, update check
+  js/router.js      Screen stack and phone Back button
+  js/run.js         Runs a workout: engine, animation loop, wake lock, run state
+  js/components.js  Icons, nav bar, stepper, segmented control, toast
+  js/screens/       One file per screen group (home, workout, run, history, settings)
   js/engine.js      Workout timing (pure logic, unit-tested)
   js/audio.js       Beeps via Web Audio, scheduled ahead on the audio clock
-  js/store.js       Workouts, sessions, settings in localStorage
-  js/views.js       Screen templates
+  js/store.js       Workouts, sessions, settings: one VanX reactive object, saved to localStorage
   js/types.js       Burpee types, how-to text, colors
   js/stats.js       Weekly goal, history series, records (pure, unit-tested)
   js/backup.js      Backup export/import, install button, new-version check
   sw.js             Service worker: offline + always-fresh updates
+  vendor/           VanJS 1.6.1 + VanX 0.6.3, copied unmodified (see vendor/README.md)
   manifest.webmanifest, icons/   Install metadata and icons
   version.json      "dev" locally; the deploy writes the commit id here
 tests/              node:test unit tests
@@ -74,7 +78,8 @@ docs/
 
 ## How it works
 
-- **Tech:** plain HTML, CSS and JavaScript, with no frameworks and no build step.
+- **Tech:** plain HTML, CSS and JavaScript with [VanJS](https://vanjs.org) + VanX (about 3 KB together, copied into `app/vendor/`). No build step.
+- **UI model:** each navigation builds the screen once with `van.tags`; the parts written as `() => ...` update by themselves when the data they read changes. All data lives in one `vanX.reactive` object in `store.js`, and a single `van.derive` saves it after every change.
 - **Beeps:** made with the Web Audio API, with no sound files. Screen kept on with the Wake Lock API.
 - **Data:** stored only on the phone, in the browser's local storage. Use Export/Import for backups.
 - **Install:** open the site on the phone and choose "Add to Home Screen" (iPhone: Safari > Share; Android: Chrome > Install app, or the Install button in Settings).

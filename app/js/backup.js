@@ -1,6 +1,7 @@
 // Backup export/import (a JSON file you keep somewhere safe), install help,
 // and the "new version available" check.
 
+import van from 'vanjs-core';
 import * as store from './store.js';
 
 // ------------------------------------------------------------------ export
@@ -56,21 +57,8 @@ export function pickBackup() {
 
 // ------------------------------------------------------------------ install
 let deferredPrompt = null;
-let onInstallChange = () => {};
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault(); // show our own button in Settings instead
-  deferredPrompt = e;
-  onInstallChange();
-});
-window.addEventListener('appinstalled', () => {
-  deferredPrompt = null;
-  onInstallChange();
-});
-
-export function watchInstall(fn) { onInstallChange = fn; }
-
-export function installState() {
+function computeInstallState() {
   const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   if (standalone) return 'installed';
   if (deferredPrompt) return 'prompt';
@@ -78,17 +66,31 @@ export function installState() {
   return 'manual';
 }
 
+// installed | prompt (Android install button) | ios (Add to Home Screen steps) | manual
+export const installState = van.state(computeInstallState());
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); // show our own button in Settings instead
+  deferredPrompt = e;
+  installState.val = computeInstallState();
+});
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  installState.val = 'installed';
+});
+
 export async function promptInstall() {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
   deferredPrompt = null;
-  onInstallChange();
+  installState.val = computeInstallState();
 }
 
 // ------------------------------------------------------------------ updates
 // version.json is written by the deploy workflow (git commit id).
 let loadedVersion = null;
+export const version = van.state(null);
 
 async function fetchVersion() {
   try {
@@ -109,10 +111,9 @@ export async function initVersion() {
     if (loadedVersion) localStorage.setItem(SEEN_KEY, loadedVersion);
     else loadedVersion = localStorage.getItem(SEEN_KEY);
   } catch { /* storage unavailable */ }
+  version.val = loadedVersion;
   return loadedVersion;
 }
-
-export const currentVersion = () => loadedVersion;
 
 export async function updateAvailable() {
   const latest = await fetchVersion();
