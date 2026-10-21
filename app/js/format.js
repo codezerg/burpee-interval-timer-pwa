@@ -12,6 +12,12 @@ export function duration(totalSeconds) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
+// Totals: 32m, 3h 44m (seconds don't matter at this scale).
+export function hoursMinutes(totalSeconds) {
+  const m = Math.floor(Math.max(0, totalSeconds) / 60);
+  return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`;
+}
+
 export function pace(seconds) {
   return `${Number.isInteger(seconds) ? seconds : seconds.toFixed(1)} s`;
 }

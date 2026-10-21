@@ -1,9 +1,10 @@
 // Screen templates. Each returns an HTML string; main.js wires up the actions
 // through data-action attributes.
 
-import { TYPES, TYPE_ORDER, typeName, workoutTitle } from './types.js';
-import { clock, duration, pace, dayLabel, longDate, esc } from './format.js';
+import { TYPES, TYPE_ORDER, STACK_ORDER, typeName, workoutTitle } from './types.js';
+import { clock, duration, hoursMinutes, pace, dayLabel, longDate, esc } from './format.js';
 import * as store from './store.js';
+import * as stats from './stats.js';
 
 const icon = {
   play: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
@@ -18,6 +19,8 @@ const icon = {
   info: '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.5"/></svg>',
   check: '<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
   redo: '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>',
+  history: '<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 17v-6"/><path d="M11 17V6"/><path d="M16 17v-9"/><path d="M21 17v-4"/></svg>',
+  trash: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg>',
   home: '<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>',
   settings: '<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9"/><path d="M19 6h1"/><circle cx="16" cy="6" r="2.5"/><path d="M4 12h3"/><path d="M13 12h7"/><circle cx="10" cy="12" r="2.5"/><path d="M4 18h11"/><circle cx="18" cy="18" r="2.5"/></svg>',
 };
@@ -30,7 +33,53 @@ function badge(w) {
 function nav(active) {
   const tab = (id, label) =>
     `<button data-action="tab" data-tab="${id}" ${active === id ? 'aria-current="page"' : ''}>${icon[id]}${label}</button>`;
-  return `<nav class="nav" aria-label="Main">${tab('home', 'Home')}${tab('settings', 'Settings')}</nav>`;
+  return `<nav class="nav" aria-label="Main">${tab('home', 'Home')}${tab('history', 'History')}${tab('settings', 'Settings')}</nav>`;
+}
+
+// ------------------------------------------------------------------ Weekly goal card (Home)
+function weekCard(now = Date.now()) {
+  const s = store.settings();
+  const start = stats.weekStart(now, s.weekStartsOn);
+  const all = store.sessions();
+  const week = stats.summarize(stats.inRange(all, start, stats.addDays(start, 7)));
+  const goal = stats.goalStatus(week, s);
+  const [main, second] = goal.parts;
+  const today = stats.dayStart(now);
+  const daysLeft = Math.round((stats.addDays(start, 7) - today) / stats.DAY_MS);
+  const unitLabel = main.unit === 'min' ? 'minutes' : 'burpees';
+  const left = Math.max(0, main.target - main.value);
+
+  const days = stats.dailySeries(all, start).map((d) => {
+    const label = new Date(d.start).toLocaleDateString([], { weekday: 'narrow' });
+    const isToday = d.start === today;
+    const n = d.sum.burpees;
+    const dot = n > 0
+      ? `<div class="day-dot done">${n}</div>`
+      : `<div class="day-dot ${isToday ? 'today' : ''}"></div>`;
+    return `<div class="day ${isToday ? 'is-today' : ''}"><span>${label}</span>${dot}</div>`;
+  }).join('');
+
+  return `
+  <section class="card week" aria-label="Weekly goal">
+    <div class="between">
+      <span class="eyebrow">This week</span>
+      <span class="small muted">${goal.hit ? '<b class="goal-hit">Goal hit ✓</b>' : `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`}</span>
+    </div>
+    <div class="row" style="align-items:baseline;gap:8px">
+      <span class="digits" style="font-size:64px;line-height:0.9">${main.value}</span>
+      <span class="muted" style="font-size:17px;font-weight:500">/ ${main.target} ${unitLabel}</span>
+    </div>
+    <div class="meter" role="progressbar" aria-label="Weekly ${unitLabel}" aria-valuemin="0" aria-valuemax="${main.target}" aria-valuenow="${main.value}">
+      <div style="width:${(main.pct * 100).toFixed(1)}%"></div>
+    </div>
+    <div class="between small muted">
+      <span>${left > 0 ? `<b style="color:var(--ink)">${left}</b> to go` : `<b style="color:var(--ink)">${main.value - main.target}</b> over the goal`}</span>
+      ${second
+        ? `<span><b style="color:var(--ink)">${second.value}</b> / ${second.target} ${second.unit === 'min' ? 'min' : 'burpees'}</span>`
+        : `<span>${stats.minutes(week)} min · ${week.workouts} ${week.workouts === 1 ? 'workout' : 'workouts'}</span>`}
+    </div>
+    <div class="days">${days}</div>
+  </section>`;
 }
 
 // ------------------------------------------------------------------ Home
@@ -73,6 +122,7 @@ export function home() {
       <span class="small muted" style="font-weight:500">${esc(longDate())}</span>
       <h1>Burpees</h1>
     </div>
+    ${weekCard()}
     ${catchUpCards}
     <div class="between" style="padding-top:4px">
       <h2>My workouts</h2>
@@ -367,6 +417,164 @@ export function summary(r) {
   </main>`;
 }
 
+// ------------------------------------------------------------------ History
+const RANGES = [['week', 'This week'], ['weeks', '8 weeks'], ['all', '12 months']];
+const CHART_H = 160;
+
+function niceMax(v) {
+  if (v <= 10) return 10;
+  const step = 10 ** Math.floor(Math.log10(v)) / 2;
+  return Math.ceil(v / step) * step;
+}
+
+function typeLabel(type) { return TYPES[type].name; }
+
+function breakdown(sum) {
+  return STACK_ORDER.filter((t) => sum.byType[t] > 0).map((t) => `${typeLabel(t)} ${sum.byType[t]}`).join(' · ');
+}
+
+export function history({ range = 'weeks', filter = null, sel = null, limit = 20 }, now = Date.now()) {
+  const s = store.settings();
+  const all = store.sessions();
+  const list = filter ? all.filter((x) => x.type === filter) : all;
+
+  let series, labels, detailLabel, from;
+  if (range === 'week') {
+    const start = stats.weekStart(now, s.weekStartsOn);
+    series = stats.dailySeries(list, start);
+    labels = series.map((d) => new Date(d.start).toLocaleDateString([], { weekday: 'narrow' }));
+    detailLabel = (d) => new Date(d.start).toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'short' });
+    from = start;
+  } else if (range === 'all') {
+    series = stats.monthlySeries(list, { count: 12, now });
+    labels = series.map((m) => new Date(m.start).toLocaleDateString([], { month: 'narrow' }));
+    detailLabel = (m) => new Date(m.start).toLocaleDateString([], { month: 'long', year: 'numeric' });
+    from = series[0].start;
+  } else {
+    series = stats.weeklySeries(list, { count: 8, now, startDay: s.weekStartsOn });
+    labels = series.map((w, i) => (i === series.length - 1 ? 'Now'
+      : new Date(w.start).toLocaleDateString([], { day: 'numeric', month: 'numeric' })));
+    detailLabel = (w) => `Week of ${new Date(w.start).toLocaleDateString([], { day: 'numeric', month: 'short' })}`;
+    from = series[0].start;
+  }
+  const period = list.filter((x) => x.startedAt >= from);
+  const total = stats.summarize(period);
+
+  // Goal line only where it means something: weekly bars, burpee goal, all types.
+  const goalLine = range === 'weeks' && s.goalType !== 'minutes' && !filter ? s.goalBurpees : null;
+  const top = niceMax(Math.max(goalLine || 0, ...series.map((x) => x.sum.burpees)) * (goalLine ? 1.1 : 1));
+  const h = (v) => (v / top) * CHART_H;
+  // Default selection: today in the week view, the current week/month otherwise.
+  const todayIndex = series.findIndex((x) => now >= x.start && now < x.end);
+  const selected = sel != null && sel < series.length ? sel : (todayIndex >= 0 ? todayIndex : series.length - 1);
+
+  let meta = '';
+  if (range === 'weeks' && !filter) {
+    const hits = stats.weeklySeries(all, { count: 8, now, startDay: s.weekStartsOn })
+      .filter((w) => stats.goalStatus(w.sum, s).hit).length;
+    meta = `Goal hit ${hits} of 8 weeks`;
+  } else if (filter) {
+    meta = `${typeLabel(filter)} only`;
+  }
+
+  const bars = series.map((x, i) => {
+    const segs = STACK_ORDER.filter((t) => x.sum.byType[t] > 0)
+      .map((t) => `<div style="height:${Math.max(2, h(x.sum.byType[t])).toFixed(1)}px;background:${TYPES[t].bar}"></div>`).join('');
+    return `<button class="bar" data-action="bar" data-i="${i}" aria-pressed="${i === selected}"
+      aria-label="${esc(detailLabel(x))}: ${x.sum.burpees} burpees">
+      <div class="stack-bar">${segs}</div></button>`;
+  }).join('');
+
+  const legend = STACK_ORDER.filter((t) => (filter ? t === filter : true) && (total.byType[t] > 0 || !filter))
+    .map((t) => `<span class="legend-item"><span class="swatch" style="background:${TYPES[t].bar}"></span>${typeLabel(t)}<b>${total.byType[t]}</b></span>`)
+    .join('');
+
+  const cur = series[selected];
+  const chart = `
+  <section class="card" aria-label="Burpees chart">
+    <div class="between" style="align-items:baseline">
+      <h2 style="font-size:15px">Burpees per ${range === 'week' ? 'day' : range === 'all' ? 'month' : 'week'}</h2>
+      <span class="small muted">${meta}</span>
+    </div>
+    <div class="chart" style="height:${CHART_H + 12}px">
+      ${goalLine ? `<div class="goal-line" style="bottom:${h(goalLine).toFixed(1)}px"><span>Goal ${goalLine}</span></div>` : ''}
+      <div class="bars" style="height:${CHART_H}px;grid-template-columns:repeat(${series.length}, minmax(0, 1fr))">${bars}</div>
+    </div>
+    <div class="bar-labels" style="grid-template-columns:repeat(${series.length}, minmax(0, 1fr))">
+      ${labels.map((l, i) => `<span ${i === selected ? 'class="on"' : ''}>${esc(l)}</span>`).join('')}
+    </div>
+    <div class="bar-detail">
+      <b>${esc(detailLabel(cur))}: ${cur.sum.burpees} burpees</b>
+      <span class="muted">${cur.sum.burpees ? `${esc(breakdown(cur.sum))} · ${stats.minutes(cur.sum)} min` : 'No workouts'}</span>
+    </div>
+    <div class="legend">${legend}</div>
+  </section>`;
+
+  // Records (all time, per type)
+  const recRows = TYPE_ORDER.map((t) => [t, stats.records(all, t, s.weekStartsOn)]).filter(([, r]) => r)
+    .filter(([t]) => !filter || t === filter)
+    .map(([t, r]) => `
+      <div class="rec-row">
+        <span class="rec-name"><span class="swatch" style="background:${TYPES[t].bar}"></span>${typeLabel(t)}</span>
+        <span>${r.most}</span><span>${r.fastest != null ? pace(r.fastest) : '–'}</span><span>${r.bestWeek}</span><span>${r.total}</span>
+      </div>`).join('');
+  const gw = stats.goalWeeks(all, s, now);
+  const records = recRows ? `
+  <section class="card" aria-label="Records">
+    <div class="between" style="align-items:baseline">
+      <h2 style="font-size:15px">Records</h2>
+      <span class="small muted">all time</span>
+    </div>
+    <div class="rec-table">
+      <div class="rec-row rec-head"><span></span><span>Most</span><span>Fastest</span><span>Week</span><span>Total</span></div>
+      ${recRows}
+    </div>
+    <span class="small muted">Weekly goal hit in <b style="color:var(--ink)">${gw.hit}</b> of ${gw.total} ${gw.total === 1 ? 'week' : 'weeks'}. Fastest counts full workouts only.</span>
+  </section>` : '';
+
+  // Activity list
+  const rows = period.slice(0, limit).map((x) => {
+    const w = { type: x.type, typeName: x.typeName };
+    const partial = x.done < x.target;
+    const tag = x.catchUpOf ? '<span class="pill good">Catch-up</span>' : partial ? '<span class="pill partial">Partial</span>' : '';
+    return `<div class="activity">
+      <span class="badge" style="width:36px;height:36px;font-size:13px;background:${TYPES[x.type].tint};color:${TYPES[x.type].ink}">${TYPES[x.type].badge}</span>
+      <div class="grow stack" style="gap:2px;min-width:0">
+        <span class="small muted">${esc(dayLabel(x.startedAt, now))}</span>
+        <span style="font-weight:600">${esc(workoutTitle(w, x.target))}</span>
+        <span class="small muted">${duration(x.activeSec || 0)} · every ${pace(x.pace)}</span>
+      </div>
+      <div class="stack" style="align-items:flex-end;gap:4px">
+        <span class="digits" style="font-size:22px">${x.done}${partial ? ` / ${x.target}` : ''}</span>${tag}
+      </div>
+      <button class="icon-btn del" data-action="delete-session" data-id="${x.id}" aria-label="Delete this session">${icon.trash}</button>
+    </div>`;
+  }).join('');
+
+  const chips = [[null, 'All'], ...TYPE_ORDER.map((t) => [t, typeLabel(t)])].map(([t, label]) =>
+    `<button data-action="history-filter" data-type="${t || ''}" aria-pressed="${(filter || null) === t}">${label}</button>`).join('');
+
+  return `
+  <main class="screen with-nav">
+    <h1>History</h1>
+    <div class="seg">${RANGES.map(([v, l]) => `<button data-action="history-range" data-value="${v}" aria-pressed="${range === v}">${l}</button>`).join('')}</div>
+    <div class="chips scroll-x">${chips}</div>
+    ${all.length ? `
+      ${chart}
+      <section class="stats card" style="background:var(--card)" aria-label="Totals">
+        <div><span class="label">Burpees</span><span class="digits">${total.burpees}</span></div>
+        <div><span class="label">Time</span><span class="digits">${hoursMinutes(total.seconds)}</span></div>
+        <div><span class="label">Workouts</span><span class="digits">${total.workouts}</span></div>
+      </section>
+      ${records}
+      <h2 style="padding-top:4px">Activity</h2>
+      <div class="stack">${rows || '<div class="small muted">No workouts in this period.</div>'}</div>
+      ${period.length > limit ? `<button class="btn ghost block small" data-action="history-more">Show more (${period.length - limit})</button>` : ''}
+    ` : '<div class="empty">No workouts yet.<br>Finish or stop a workout and it shows up here.</div>'}
+  </main>
+  ${nav('history')}`;
+}
+
 // ------------------------------------------------------------------ Settings
 function installBlock(state) {
   if (state === 'installed') {
@@ -393,6 +601,37 @@ export function settings({ install, version }) {
   return `
   <main class="screen with-nav">
     <h1>Settings</h1>
+
+    <span class="group-label">Weekly goal</span>
+    <div class="group">
+      <div class="stack">
+        <span style="font-weight:600">Count by</span>
+        ${seg('set-goal-type', s.goalType, [['burpees', 'Burpees'], ['minutes', 'Minutes'], ['both', 'Both']])}
+        ${s.goalType === 'both' ? '<span class="small muted">The week counts when you reach both targets.</span>' : ''}
+      </div>
+      ${s.goalType !== 'minutes' ? `
+      <div class="between">
+        <span style="font-weight:600">Burpees per week</span>
+        <div class="stepper">
+          <button data-action="goal-step" data-key="goalBurpees" data-step="-10" aria-label="Lower burpee goal" ${s.goalBurpees <= 10 ? 'disabled' : ''}>−</button>
+          <span class="value">${s.goalBurpees}</span>
+          <button data-action="goal-step" data-key="goalBurpees" data-step="10" aria-label="Raise burpee goal">+</button>
+        </div>
+      </div>` : ''}
+      ${s.goalType !== 'burpees' ? `
+      <div class="between">
+        <span style="font-weight:600">Minutes per week</span>
+        <div class="stepper">
+          <button data-action="goal-step" data-key="goalMinutes" data-step="-5" aria-label="Lower minutes goal" ${s.goalMinutes <= 5 ? 'disabled' : ''}>−</button>
+          <span class="value">${s.goalMinutes}</span>
+          <button data-action="goal-step" data-key="goalMinutes" data-step="5" aria-label="Raise minutes goal">+</button>
+        </div>
+      </div>` : ''}
+      <div class="stack">
+        <span style="font-weight:600">Week starts on</span>
+        ${seg('set-week-start', s.weekStartsOn, [[1, 'Monday'], [0, 'Sunday']])}
+      </div>
+    </div>
 
     <span class="group-label">App</span>
     <div class="group">${installBlock(install)}</div>

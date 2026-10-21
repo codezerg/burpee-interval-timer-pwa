@@ -1,5 +1,5 @@
 // Burpee types: display names, colors and how-to text (see docs/proposal.txt 2.1).
-// Order = easiest to hardest, used for stacking in charts later.
+// `color` is the type's identity color; `bar` is the (validated) chart fill.
 
 export const TYPES = {
   sixcount: {
@@ -7,6 +7,7 @@ export const TYPES = {
     name: '6-count',
     badge: '6-C',
     color: '#14968A',
+    bar: '#14968A',
     tint: '#DFF3F0',
     ink: '#0E6B62',
     summary: 'Military style: no jump. Builds conditioning.',
@@ -28,6 +29,7 @@ export const TYPES = {
     name: 'Standard',
     badge: 'STD',
     color: '#F28C00',
+    bar: '#F28C00',
     tint: '#FFF1DE',
     ink: '#9A4A06',
     summary: 'Squat, plank, push-up, jump. The classic.',
@@ -49,6 +51,7 @@ export const TYPES = {
     name: 'Navy SEAL',
     badge: 'SEAL',
     color: '#1E3F8A',
+    bar: '#2F5BB7',
     tint: '#E4EAF6',
     ink: '#1E3F8A',
     summary: '3 push-ups + 2 knee drives. Builds strength.',
@@ -72,6 +75,7 @@ export const TYPES = {
     name: 'Other',
     badge: 'OTH',
     color: '#B9B9C2',
+    bar: '#B9B9C2',
     tint: '#F0F0F2',
     ink: '#5F6168',
     summary: 'Your own variation, e.g. "No push-up".',
@@ -84,6 +88,8 @@ export const TYPES = {
 };
 
 export const TYPE_ORDER = ['standard', 'sixcount', 'seal', 'other'];
+// Charts stack easiest at the bottom, hardest on top (Other last).
+export const STACK_ORDER = ['sixcount', 'standard', 'seal', 'other'];
 
 export function typeName(workout) {
   if (workout.type === 'other') return (workout.typeName || '').trim() || 'Other';

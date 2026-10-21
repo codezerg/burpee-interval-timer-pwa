@@ -19,7 +19,7 @@ A phone app for doing burpees at a steady pace and getting better over time. Ins
 | --- | --- |
 | Proposal and design | Done (2026-10-21) |
 | Phase 1: workouts, timer, beeps, saving sessions | Done (2026-10-21) |
-| Phase 2: weekly goal, history, records | – |
+| Phase 2: weekly goal, history, records | Done (2026-10-21) |
 | Phase 3: PWA install (manifest, offline, icons), export/import | Done (2026-10-21) |
 | Phase 4: motivation features and recovery weeks | – |
 | Phase 5: Monday review, levels, monthly challenge | – |
@@ -58,7 +58,8 @@ app/
   js/audio.js       Beeps via Web Audio, scheduled ahead on the audio clock
   js/store.js       Workouts, sessions, settings in localStorage
   js/views.js       Screen templates
-  js/types.js       Burpee types and how-to text
+  js/types.js       Burpee types, how-to text, colors
+  js/stats.js       Weekly goal, history series, records (pure, unit-tested)
   js/backup.js      Backup export/import, install button, new-version check
   sw.js             Service worker: offline + always-fresh updates
   manifest.webmanifest, icons/   Install metadata and icons

@@ -145,7 +145,7 @@ h2 { margin: 0; font-size: 17px; font-weight: 700; }
   width: 100%; max-width: 480px;
   height: calc(76px + var(--safe-bottom)); padding-bottom: calc(8px + var(--safe-bottom));
   background: var(--card); border-top: 1px solid var(--line);
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .nav button {
   border: none; background: transparent; color: var(--muted);
@@ -275,3 +275,41 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
   background: var(--ink); color: #FFFFFF; padding: 12px 18px; border-radius: 999px; font-size: 14px; font-weight: 600;
   box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 10;
 }
+
+/* ---- weekly goal card (Home) */
+.week { display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 16px; }
+.goal-hit { color: var(--good); }
+.meter { height: 10px; background: var(--track); border-radius: 999px; overflow: hidden; }
+.meter > div { height: 100%; background: var(--accent); border-radius: 999px; }
+.days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding-top: 4px; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); font-weight: 600; }
+.day.is-today { color: var(--ink); font-weight: 700; }
+.day-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--track); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+.day-dot.done { background: var(--accent); color: var(--ink); }
+.day-dot.today { background: var(--card); border: 2px solid var(--accent); }
+
+/* ---- history */
+.scroll-x { flex-wrap: nowrap; overflow-x: auto; margin: 0 -20px; padding: 0 20px 2px; scrollbar-width: none; }
+.scroll-x::-webkit-scrollbar { display: none; }
+.scroll-x button { flex-shrink: 0; }
+.chart { position: relative; margin-top: 4px; }
+.bars { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 6px; align-items: end; border-bottom: 1px solid var(--line); }
+.bar { height: 100%; border: none; background: transparent; padding: 0 1px; display: flex; align-items: flex-end; border-radius: 6px; }
+.bar[aria-pressed="true"] .stack-bar { outline: 2px solid var(--ink); outline-offset: 2px; }
+.stack-bar { width: 100%; display: flex; flex-direction: column-reverse; gap: 2px; border-radius: 4px 4px 0 0; overflow: hidden; }
+.goal-line { position: absolute; left: 0; right: 0; border-top: 2px dashed #9A4A06; z-index: 1; pointer-events: none; }
+.goal-line span { position: absolute; right: 0; bottom: 3px; font-size: 11px; font-weight: 700; color: #9A4A06; background: var(--card); padding: 0 4px; }
+.bar-labels { display: grid; gap: 6px; font-size: 11px; color: var(--muted); text-align: center; margin-top: 6px; }
+.bar-labels .on { color: var(--ink); font-weight: 700; }
+.bar-detail { display: flex; flex-direction: column; gap: 2px; font-size: 13px; background: var(--bg); border-radius: 12px; padding: 10px 12px; margin-top: 10px; }
+.legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; font-size: 12px; color: var(--ink-2); margin-top: 12px; }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-item b { margin-left: auto; color: var(--ink); }
+.swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; display: inline-block; }
+.rec-table { display: flex; flex-direction: column; margin: 8px 0; }
+.rec-row { display: grid; grid-template-columns: minmax(0, 2.1fr) repeat(4, minmax(0, 1fr)); gap: 6px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; font-weight: 600; text-align: right; }
+.rec-row:last-child { border-bottom: none; }
+.rec-head { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 0; }
+.rec-name { display: flex; align-items: center; gap: 6px; text-align: left; font-size: 14px; white-space: nowrap; }
+.activity { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 12px 8px 12px 12px; display: flex; align-items: center; gap: 12px; }
+.activity .del { width: 40px; height: 40px; border: none; color: var(--muted); background: transparent; flex-shrink: 0; }

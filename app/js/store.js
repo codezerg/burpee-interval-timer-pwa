@@ -10,6 +10,10 @@ const DEFAULT_SETTINGS = {
   keepAwake: true,
   catchUpUntil: 'endOfDay', // endOfDay | untilDone
   lastBackupAt: null,
+  goalType: 'burpees', // burpees | minutes | both
+  goalBurpees: 150,
+  goalMinutes: 30,
+  weekStartsOn: 1,     // 1 = Monday, 0 = Sunday
 };
 
 function seed() {
@@ -112,6 +116,14 @@ export function openCatchUps(now = Date.now()) {
   return sessions().filter((s) =>
     !s.catchUpOf && !s.dismissed && s.done < s.target && remaining(s) > 0 &&
     (untilDone || sameDay(s.startedAt, now)));
+}
+
+// Deletes a session and any catch-ups linked to it. Returns how many were removed.
+export function deleteSession(sessionId) {
+  const before = data.sessions.length;
+  data.sessions = data.sessions.filter((s) => s.id !== sessionId && s.catchUpOf !== sessionId);
+  save();
+  return before - data.sessions.length;
 }
 
 export function dismissCatchUp(sessionId) {

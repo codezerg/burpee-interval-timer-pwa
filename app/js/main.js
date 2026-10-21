@@ -63,12 +63,14 @@ function handleBack() {
 // ------------------------------------------------------------------ rendering
 let editorDraft = null;
 let result = null; // pending summary
+let historyView = { range: 'weeks', filter: null, sel: null, limit: 20 };
 
 function render(scrollTop = false) {
   const { name, params } = top();
   let html;
   switch (name) {
     case 'home': html = views.home(); break;
+    case 'history': html = views.history(historyView); break;
     case 'settings': html = views.settings({ install: backup.installState(), version: backup.currentVersion() }); break;
     case 'detail': {
       const w = store.getWorkout(params.id);
@@ -325,7 +327,7 @@ async function setWakeLock(on) {
 // When the app comes back to the screen, check for a new deploy. Reload right
 // away on a calm screen; otherwise wait until the next return to Home.
 let updateReady = false;
-const CALM_SCREENS = ['home', 'settings', 'detail', 'howto'];
+const CALM_SCREENS = ['home', 'history', 'settings', 'detail', 'howto'];
 
 async function checkForUpdate() {
   if (updateReady || !(await backup.updateAvailable())) return;
@@ -441,7 +443,31 @@ const actions = {
     resetTo('home');
   },
 
+  // history
+  'history-range': (el) => { historyView = { ...historyView, range: el.dataset.value, sel: null, limit: 20 }; render(); },
+  'history-filter': (el) => { historyView = { ...historyView, filter: el.dataset.type || null, limit: 20 }; render(); },
+  bar: (el) => { historyView.sel = Number(el.dataset.i); render(); },
+  'history-more': () => { historyView.limit += 20; render(); },
+  'delete-session': (el) => {
+    const s = store.sessions().find((x) => x.id === el.dataset.id);
+    if (!s) return;
+    const linked = store.catchUpsOf(s.id).length;
+    const what = `${s.done} ${s.type === 'other' ? (s.typeName || 'Other') : TYPES[s.type].name} burpees`;
+    if (!confirm(`Delete this session (${what})?${linked ? ` Its ${linked} catch-up ${linked === 1 ? 'session is' : 'sessions are'} deleted too.` : ''}`)) return;
+    store.deleteSession(s.id);
+    render();
+    toast('Session deleted');
+  },
+
   // settings
+  'set-goal-type': (el) => { store.updateSettings({ goalType: el.dataset.value }); render(); },
+  'set-week-start': (el) => { store.updateSettings({ weekStartsOn: Number(el.dataset.value) }); render(); },
+  'goal-step': (el) => {
+    const key = el.dataset.key;
+    const min = key === 'goalBurpees' ? 10 : 5;
+    store.updateSettings({ [key]: Math.max(min, store.settings()[key] + Number(el.dataset.step)) });
+    render();
+  },
   'set-countdown': (el) => { store.updateSettings({ countdown: Number(el.dataset.value) }); render(); },
   'set-catchup': (el) => { store.updateSettings({ catchUpUntil: el.dataset.value }); render(); },
   'toggle-awake': () => { store.updateSettings({ keepAwake: !store.settings().keepAwake }); render(); },
