@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Local tooling
+node_modules/
+.netlify/
+*.log
+
+# Exported workout backups (personal data)
+*backup*.json

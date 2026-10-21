@@ -1,0 +1,393 @@
+BURPEE INTERVAL TIMER - PROPOSAL
+Personal installable web app (PWA)
+Date: 2026-10-21
+================================================================
+
+1. GOAL
+----------------------------------------------------------------
+A simple phone app for doing burpees at a steady pace and getting
+better over time. Inspired by the Busy Dad Program, but flexible:
+short custom workouts instead of fixed 20-minute sessions.
+
+Core idea: a workout = number of burpees + seconds per burpee.
+The app beeps at the start of each burpee so you keep the pace.
+  - Beginner:       1 burpee every 15 s
+  - Very fit:       1 burpee every 4-5 s
+Progress = slowly lowering the seconds and/or raising the count.
+
+
+2. FEATURES
+----------------------------------------------------------------
+2.1 Custom workouts
+  - Create, edit, delete workouts
+  - Fields: burpee type, number of burpees,
+    seconds per burpee (step 0.5 s, range 2-60 s)
+  - No name to type: the title is built automatically as
+    "{count} {type} burpees", e.g. "40 Standard burpees",
+    "5 Navy SEAL burpees". Pace is shown under the title.
+  - Burpee types:
+      Standard       (squat, plank, push-up, jump)
+      6-count        (military: no jump; conditioning)
+      Navy SEAL      (3 push-ups + 2 knee drives; strength)
+      Other          (your own name, e.g. "No push-up")
+    Paces are very different between types, so progress
+    and records are tracked separately per type.
+  - How-to description: when choosing a type, the app shows
+    step-by-step instructions, a suggested starting pace and
+    common mistakes. Also reachable from an "i" (info) button
+    on the workout and run screens. Text for "Other" types is
+    written by you.
+
+    STANDARD BURPEE
+      1. Stand, feet shoulder-width apart
+      2. Squat down, hands on the floor
+      3. Kick feet back into a plank
+      4. Do one push-up (chest to floor)
+      5. Jump feet back to your hands
+      6. Jump up, hands overhead
+      Beginner pace: 12-15 s.  Fit: 4-5 s.
+      Easier: step back/in instead of kicking, skip the jump.
+      Mistakes: sagging hips in plank, landing stiff-legged.
+
+    6-COUNT (MILITARY) BURPEE
+      1. Squat down, hands on the floor
+      2. Kick feet back into a plank
+      3. Lower chest to the floor (push-up down)
+      4. Push up (push-up up)
+      5. Jump feet back to your hands
+      6. Stand up (no jump)
+      Focus: conditioning. Beginner pace: 10-15 s.
+      Mistakes: half push-ups, not standing fully upright.
+
+    NAVY SEAL BURPEE
+      1. Squat down, hands on the floor
+      2. Kick feet back into a plank
+      3. Push-up
+      4. Left knee to left elbow, return
+      5. Push-up
+      6. Right knee to right elbow, return
+      7. Push-up
+      8. Feet back to hands, stand up
+      Focus: strength (chest, shoulders, arms, core).
+      Try it when you can do ~10 clean push-ups in a row.
+      Beginner pace: 25-30 s.
+      Easier: push-ups on your knees.
+      Mistakes: hips sagging or piking during push-ups,
+      rushing the knee drives.
+
+    (Simple drawings/illustrations could be added later.)
+  - Total time is calculated automatically
+    e.g. 20 burpees x 15 s = 5:00
+  - Example workouts included to start with:
+      "40 Standard burpees"   every 15 s  (10:00)
+      "20 6-count burpees"    every 12 s  (4:00)
+      "5 Navy SEAL burpees"   every 30 s  (2:30)
+
+2.2 Workout timer
+  - "Get ready" countdown before start (default 5 s,
+    short ticks on the last 3 seconds)
+  - Beep at the start of every burpee
+    (beep #1 at 0:00, beep #2 at 0:15, ... for a 15 s pace)
+  - Distinct "finished" beep at the end
+  - Big on-screen display:
+      top row: elapsed | current burpee (e.g. 7 / 20) | pace
+      BIG ring  = whole workout, total time left in the middle
+      SMALL ring = current burpee, seconds to next beep
+  - Pause / Resume / Stop. Paused screen keeps both rings,
+    greyed and frozen, with a "PAUSED 0:42" pill; Resume
+    continues with the same seconds left on the small ring.
+  - Screen stays awake during the workout
+  - Sound only, no vibration: a loud, clear beep is the
+    signal for the next burpee
+
+2.3 After a workout
+  - Summary: burpees done, pace, duration
+  - Burpee count can be corrected before saving
+    (e.g. you missed a couple)
+  - "How did it feel?" + "make it harder next time"
+    suggestions (see 2.6 c), record banner (2.6 b)
+  - Save or Discard
+
+2.3a Too tired? Pause, stop, catch up
+  - PAUSE at any time: timer and beeps freeze, resume when
+    ready. Pause time is not counted as workout time.
+  - STOP at any time: what you did is always recorded,
+    e.g. "28 / 40 burpees" (marked as partial)
+  - Catch-up: if a workout was stopped early, Home shows
+      "12 burpees left from 40 Burpees today   [Catch up]"
+    Tapping it starts a short workout with just the missing
+    burpees at the same pace. You can do it later that day
+    (or another day), and it is linked to the original
+    session, so history shows e.g. "40 / 40 (28 + 12)".
+  - Catch-up can be dismissed if you don't want to finish it
+  - Everything done (partial or catch-up) counts toward the
+    weekly goal
+
+2.4 Weekly goal
+  - Goal type is a setting: BURPEES, MINUTES or BOTH
+  - Set target(s) per week (e.g. 150 burpees and/or 40 min)
+  - Both: the week counts as hit when both targets are
+    reached; Home shows burpees big and minutes underneath
+  - All burpee types count the same (1 Navy SEAL = 1 burpee)
+  - Week starts Monday or Sunday (setting)
+  - Home screen shows progress bar + days you trained this week
+
+2.5 History & progress
+  - List of all sessions (date, workout, burpees, pace, time)
+    with delete option
+  - Last 8 weeks bar chart vs. weekly goal. Each bar is
+    stacked by burpee type, one color per type, easiest at
+    the bottom, going up in difficulty:
+      bottom [ 6-count | Standard | Navy SEAL | Other ] top
+    with a legend showing the total for each type
+  - Records per burpee type: total burpees, best session,
+    fastest pace; plus weeks the goal was reached
+  - Filter history by burpee type
+
+2.6 Motivation (ideas from WHOOP, Apple Fitness, Strava, Duolingo,
+    Peloton, Garmin, Fitbod, Couch to 5K, Busy Dad Training)
+  Rule: compare only with your past self, never guilt.
+  Rest days are neutral grey, never red. No daily streaks.
+
+  First version:
+  a) Weekly streak: counts weeks where the weekly goal was hit
+     ("4 wk" on Home). Earn 1 shield every 4 good weeks; a
+     shield automatically covers one missed week.
+     Recovery weeks count if the easier goal is hit; breaks
+     (sick / holiday) freeze the streak (see 2.8).
+  b) Record banner on the Complete screen, e.g.
+     "New record: 40 Standard burpees without a pause (was 32)".
+     Records per type: most in a session, fastest pace,
+     longest without pause, best week.
+  c) "How did it feel?"  Easy / OK / Hard  after every workout.
+     2x Easy in a row -> suggest +1 burpee OR -0.5 s pace.
+     Hard -> suggest repeating ("repeating is progress too").
+     Max ~10% increase per week, to avoid overdoing it.
+     (Replaces the plain "make it harder" buttons.)
+  d) Milestone badges in History: 100 / 500 / 1k / 5k / 10k
+     burpees, 10 / 25 / 50 / 100 workouts, per-type badges,
+     streak badges. Next badge shown greyed with "948 / 1000".
+     Badges can never be lost.
+  e) Pace progress in History: "15.0 s -> 14.0 s, 7% faster
+     since 1 Sep" + small line chart + trend arrows
+     (last 4 weeks vs before).
+
+  Later version:
+  f) Monday review: shown on first open of a new week.
+     Last week vs 4-week average, goal hit?, streak, highlight,
+     status word: Building / Holding / Resting.
+     Then "New week. Plan your sessions?": pick days + a cue
+     ("After morning coffee"), shown on Home as today's plan.
+  g) Levels per burpee type (new "Levels" tab), e.g. Standard:
+       1 Starter  20 every 15 s     4 Strong    60 every 10 s
+       2 Base     40 every 15 s     5 Fit       80 every  8 s
+       3 Steady   40 every 12 s     Graduate   100 every  6 s
+     Pass a test (no pausing) to level up. Take it when ready,
+     retry anytime.
+  h) Monthly challenge (pick your own, e.g. "hit weekly goal
+     3 times", "Navy SEAL month: 200 SEALs") and a
+     "Year in Burpees" recap in December.
+
+  Catch-up is shown as a bonus ("+12 recovered"), not a debt,
+  and is capped so it can't turn into one huge session.
+
+2.7 Settings
+  - Weekly goal type (Burpees / Minutes / Both) + targets,
+    week start day
+  - Countdown length, beep volume (+ test beep)
+  - Recovery: Start a recovery week, "tell me it's time
+    after" N weeks (default 4, or off), easy-week goal %
+    (default 55%), ask about pain after Hard on/off,
+    Take a break
+  - Export data to a file (backup) / Import from file
+  - Reset all data
+
+2.8 Recovery & rest (based on the rest-week research)
+  Why: burpees are hard on wrists, shoulders, knees, Achilles
+  and lower back. Tendons and joints adapt slower than heart
+  and muscles, so easier weeks matter for bodyweight training
+  too, not only for weightlifting.
+
+  Rule: the app tells you when it's time, but never starts a
+  recovery week on its own. Until you tap Start, nothing
+  changes.
+
+  a) Recovery week reminder: after 4 training weeks since
+     the last recovery week (setting: 4-6 weeks, or off),
+     Home shows a teal card on Monday:
+       "Time for a recovery week
+        4 hard weeks in a row. An easy week (goal 80) lets
+        your joints catch up. Streak stays safe."
+       [Start recovery week]  [Not this week]
+     "Not this week" hides it for the week; it comes back
+     next Monday.
+     You can take a recovery week ANY time, not only when
+     it's due: the weekly goal card on Home always shows a
+     small row, e.g.
+       "Training week 3 of 4 · recovery week due soon
+        [Start now]"
+     (also Settings > Start a recovery week). Starting one
+     early resets the 4-week count.
+     Once started, it lasts until the end of the week; can
+     be ended early.
+     Goal drops to ~55% (150 -> 80). Same pace, about
+     half the burpees. Home shows a teal "Recovery week" card
+     with "easy versions" of your workouts (e.g. 20 instead of
+     40), suggests more 6-count and fewer Navy SEAL.
+     No level tests or "+1 burpee" suggestions that week.
+     Afterwards: back to the previous goal, not higher.
+     Hitting the easy goal keeps the streak; History labels
+     the week "Recovery week" (never "missed").
+  b) (removed: no extra prompts after Hard ratings; the
+     Monday reminder in a) is the only one)
+  c) "Anything hurting?" check after a Hard rating:
+       Nothing, just tired | Wrists | Shoulders | Lower back |
+       Knees | Ankles / Achilles
+     Gives a gentler option for a few days:
+       wrists/shoulders -> no push-up burpees, skip Navy SEAL
+       knees/Achilles   -> step back/in, no jump
+       lower back       -> slower pace, step back/in
+     "Still hurts after 2 days, or sharp pain / swelling?
+     Rest and get it checked." (general tips, not medical
+     advice)
+  d) Take a break (sick / holiday / injury / other):
+     1 week, 2 weeks or until I'm back. Streak is frozen (no
+     shields used), no goal, no reminders, weeks grey.
+  e) Welcome back after time off, gentle restart:
+       up to 1 week off       -> ~90% of previous goal
+       2-3 weeks off          -> ~75%
+       4+ weeks or after fever -> 50-60%, rebuild over 2-4 wk
+     Shown as a short ramp (e.g. 110 -> 130 -> 150), same pace,
+     fewer burpees. Can be skipped.
+  Warning signs listed in the app: joint pain (not muscle
+  soreness), soreness lasting week to week, easy workouts
+  suddenly feeling hard, poor sleep, dreading workouts.
+
+
+3. SCREENS
+----------------------------------------------------------------
+  [Home]      weekly goal card, list of workouts, + New workout
+  [Editor]    name, burpees (- / +), seconds (- / +), total time
+  [Run]       full-screen timer, Pause / Stop
+  [Done]      summary, edit count, harder-next-time, Save
+  [History]   8-week chart, records, session list
+  [Paused]    both rings frozen + greyed, Resume / Stop & save
+  [Settings]  goal (burpees/minutes/both), sound, recovery,
+              data backup
+  [Levels]    level roadmap per type, monthly challenge
+  [Review]    Monday weekly review + plan the week
+  [Recovery]  Home "time for a recovery week" card, Home in
+              recovery-week mode, "Anything hurting?"
+              sheet, Take a break sheet, Welcome back screen
+  Bottom tabs: Home | History | Levels | Settings
+
+Mockups: docs/mockups/index.html (open in a browser)
+
+
+4. HOW IT WORKS (TECHNICAL)
+----------------------------------------------------------------
+  - Plain HTML + CSS + JavaScript, no frameworks, no server code
+  - Files:
+      index.html           the app
+      manifest.json        name, icon, full-screen mode
+      sw.js                service worker, works offline
+      icon-192.png, icon-512.png, apple-touch-icon.png
+  - Beeps generated with the Web Audio API (no sound files)
+  - Screen kept on with the Wake Lock API
+  - Data stored on the phone only (browser local storage)
+  - Install: open the site on the phone -> "Add to Home Screen"
+    (iPhone: Safari > Share button; Android: Chrome > Install app)
+
+
+5. HOSTING
+----------------------------------------------------------------
+To be decided later. The app is just static files, so it runs
+anywhere. Installing on a phone needs HTTPS. Options:
+  - Netlify Drop: drag the folder onto app.netlify.com/drop
+    (easiest, about 1 minute)
+  - Your own container: any static web server (e.g. nginx or
+    Caddy) serving the folder, behind HTTPS (Caddy does
+    certificates automatically; or a reverse proxy you
+    already have)
+  - GitHub Pages / Cloudflare Pages
+Can be tested on the computer first at http://localhost.
+
+
+6. LIMITATIONS
+----------------------------------------------------------------
+  - Data lives on one phone; no sync. Use Export for backups.
+    Clearing Safari/Chrome site data deletes it.
+  - iPhone: the silent switch (Ring/Silent) mutes web-app
+    beeps - keep it on Ring during workouts. The app shows a
+    reminder before the first workout and has a Test beep.
+  - The timer needs the app open on screen (it keeps the
+    screen awake). Switching apps mid-workout may delay beeps.
+
+
+7. PLAN
+----------------------------------------------------------------
+  Phase 1  Workouts + timer + beeps + saving sessions
+  Phase 2  Weekly goal, history, records
+  Phase 3  PWA install (manifest, offline, icons), export/import
+  Phase 4  Motivation, first version (2.6 a-e)
+           + recovery & rest (2.8 a-e)
+  Phase 5  Monday review, levels, monthly challenge (2.6 f-h)
+  Then:    test on your phone, adjust sound/sizes as needed
+
+Possible later ideas (not in first version):
+  - Voice count instead of beeps ("seven")
+  - Ladder / pyramid workouts (pace speeds up during the set)
+  - Reminders / notifications
+  - Sync between devices
+
+
+8. DESIGN INSPIRATION (from the commercial app screenshots)
+----------------------------------------------------------------
+Keep / borrow:
+  - Clean light look: white background, one bright accent
+    color (orange), rounded white cards, big bold numbers
+  - Home: big summary number at top (this week), workout cards
+    showing "40 Burpees | 10 min", round orange "+" button
+  - Workout detail: Duration / Burpees / Pace in large digits,
+    big orange START button at the bottom
+  - Get-ready screen: huge countdown number (3, 2, 1) with
+    "Tap to start immediately"
+  - Run screen layout:
+      top row:  ELAPSED  |  BURPEE 7/40  |  TIME LEFT
+      center:   ring that drains until the next beep,
+                with seconds to next beep in large digits
+      bottom:   big round Pause button, mute button
+  - History: "This week" vs "Overall" switch, bar chart
+    (days of the week / weeks / years), totals card
+    (duration, burpees, workouts), "Latest activity" list
+  - Bottom tab bar with icons: Home | History | Settings
+
+Leave out (not needed for a personal app):
+  - Library, Community, "Go Pro", sharing, accounts
+  - Exercise animations (only one exercise: burpees)
+  - Calories: optional rough estimate only, if wanted
+    (number would be a guess anyway)
+
+Adds over the commercial app:
+  - Pace per burpee (seconds) is the main setting, not
+    "laps x 15 s"; easy +/- adjustment for progression
+  - Weekly goal with progress bar (they show totals only)
+  - Records and "harder next time" buttons
+  - Burpees done is saved, not just duration
+
+
+9. DECISIONS (formerly open questions)
+----------------------------------------------------------------
+  1. Goal type: a setting - Burpees, Minutes or Both.
+  2. Theme: light, as in the mockups. Dark mode maybe later.
+  3. Phone: no vibration at all; sound (beep) only. Works on
+     iPhone and Android.
+  4. App name: working name "Burpee Timer" (easy to change).
+  5. Hosting: decided later - Netlify, or your own container.
+  6. Catch-up: offered until end of day by default
+     (setting: end of day / until done or dismissed).
+  7. Old history: not imported, start fresh.
+  8. 1 Navy SEAL = 1 burpee toward the goal (kept simple,
+     no setting).
+
+Design status: done. Next step is Phase 1.

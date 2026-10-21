@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workout complete – Burpee Timer mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B45309}a:hover{color:#92400E}
+</style>
+</head>
+<body>
+<div style="width: 390px; height: 1000px; box-sizing: border-box; display: flex; flex-direction: column; background: #FFFFFF; color: #1B1B1F; font-family: Inter, system-ui, sans-serif; overflow: hidden; padding: 36px 20px 28px; gap: 16px">
+  <div style="display: flex; align-items: center; gap: 14px">
+    <div style="width: 52px; height: 52px; border-radius: 50%; background: #F28C00; color: #1B1B1F; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+      <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"></path></svg>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em">Workout complete!</h1>
+      <span style="font-size: 14px; color: #5F6168">40 Standard burpees · every 15 s</span>
+    </div>
+  </div>
+
+  <div style="background: #1B1B1F; color: #FFFFFF; border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 14px">
+    <div style="width: 44px; height: 44px; border-radius: 12px; background: #F28C00; color: #1B1B1F; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 6h3a3 3 0 0 1-3 4"></path><path d="M7 6H4a3 3 0 0 0 3 4"></path></svg>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 12px; font-weight: 700; color: #FFB866; text-transform: uppercase; letter-spacing: 0.08em">New record</span>
+      <span style="font-size: 15px; font-weight: 600">40 Standard burpees without a pause</span>
+      <span style="font-size: 13px; color: #C9CAD0">Previous best: 32</span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: #F7F7F8; border-radius: 16px; padding: 14px 6px">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+      <span style="font-size: 12px; color: #5F6168">Burpees</span>
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; line-height: 1">40</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+      <span style="font-size: 12px; color: #5F6168">Time</span>
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; line-height: 1">10:00</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+      <span style="font-size: 12px; color: #5F6168">Pace</span>
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; line-height: 1">15 s</span>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; border: 1px solid #ECECEE; border-radius: 16px; padding: 10px 10px 10px 16px">
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 15px; font-weight: 600">Burpees done</span>
+      <span style="font-size: 13px; color: #5F6168">Fix it if you missed some</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px">
+      <button aria-label="One less" style="width: 44px; height: 44px; border-radius: 12px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 22px; font-weight: 600">−</button>
+      <span style="width: 44px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 28px">40</span>
+      <button aria-label="One more" style="width: 44px; height: 44px; border-radius: 12px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 22px; font-weight: 600">+</button>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 700">How did it feel?</h2>
+      <a href="#" style="font-size: 13px; font-weight: 600">Something hurt?</a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <button aria-pressed="true" style="height: 52px; border-radius: 14px; border: 2px solid #F28C00; background: #FFF4E5; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 700">Easy</button>
+      <button aria-pressed="false" style="height: 52px; border-radius: 14px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600">OK</button>
+      <button aria-pressed="false" style="height: 52px; border-radius: 14px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600">Hard</button>
+    </div>
+  </div>
+
+  <div style="background: #F7F7F8; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 15px; font-weight: 700">2 easy workouts in a row — ready for a bit more?</span>
+      <span style="font-size: 13px; color: #5F6168">Pick one change for next time</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <button aria-pressed="true" style="height: 60px; border-radius: 14px; border: 2px solid #F28C00; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+        <span style="font-size: 16px; font-weight: 700">+1 burpee</span>
+        <span style="font-size: 12px; color: #5F6168">40 → 41</span>
+      </button>
+      <button aria-pressed="false" style="height: 60px; border-radius: 14px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+        <span style="font-size: 16px; font-weight: 700">−0.5 s pace</span>
+        <span style="font-size: 12px; color: #5F6168">15 → 14.5 s</span>
+      </button>
+    </div>
+    <button style="height: 40px; border: none; background: transparent; color: #3F4148; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600">Keep it the same — repeating is progress too</button>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px; border: 1px solid #ECECEE; border-radius: 16px; padding: 14px 16px">
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 14px">
+      <span style="font-weight: 600">This week</span>
+      <span style="color: #5F6168"><b style="color: #1B1B1F">80</b> / 150 burpees</span>
+    </div>
+    <div style="height: 8px; background: #ECECEF; border-radius: 999px; overflow: hidden">
+      <div style="width: 53%; height: 100%; background: #F28C00; border-radius: 999px"></div>
+    </div>
+    <span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #3F4148">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C2410C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4 0 7-3 7-7 0-3-2-5-3-7-1 2-2 3-4 3 0-3-1-6-4-9 0 4-5 7-5 13 0 4 4 7 9 7z"></path></svg>
+      70 more keeps your 4-week streak going
+    </span>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <button style="width: 100%; height: 58px; border-radius: 999px; border: none; background: #F28C00; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 17px; font-weight: 700">Save</button>
+    <button style="width: 100%; height: 44px; border: none; background: transparent; color: #5F6168; font-family: Inter, sans-serif; font-size: 15px; font-weight: 500">Discard</button>
+  </div>
+</div>
+</body>
+</html>

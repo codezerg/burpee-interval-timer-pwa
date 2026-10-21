@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B45309}a:hover{color:#92400E}
+</style>
+</helmet>
+<div style="width: 390px; height: 1350px; box-sizing: border-box; display: flex; flex-direction: column; background: #F7F7F8; color: #1B1B1F; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 28px 20px 20px">
+    <h1 style="margin: 0 0 4px; font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Settings</h1>
+
+    <span style="font-size: 12px; font-weight: 700; color: #5F6168; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 4px 0">Weekly goal</span>
+    <div style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 1px 2px rgba(20,20,24,0.04), 0 6px 18px rgba(20,20,24,0.06); display: flex; flex-direction: column">
+      <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 600">Count by</span>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: #ECECEF; border-radius: 12px; padding: 3px">
+          <button aria-pressed="false" style="height: 38px; border: none; border-radius: 10px; background: transparent; color: #3F4148; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600">Burpees</button>
+          <button aria-pressed="false" style="height: 38px; border: none; border-radius: 10px; background: transparent; color: #3F4148; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600">Minutes</button>
+          <button aria-pressed="true" style="height: 38px; border: none; border-radius: 10px; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.08)">Both</button>
+        </div>
+        <span style="font-size: 13px; color: #5F6168">Both: the week counts when you reach both targets.</span>
+      </div>
+      <div style="padding: 10px 10px 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 600">Burpees per week</span>
+        <div style="display: flex; align-items: center; gap: 4px">
+          <button aria-label="Lower target" style="width: 44px; height: 44px; border-radius: 12px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 22px; font-weight: 600">−</button>
+          <span style="width: 52px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px">150</span>
+          <button aria-label="Raise target" style="width: 44px; height: 44px; border-radius: 12px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 22px; font-weight: 600">+</button>
+        </div>
+      </div>
+      <div style="padding: 10px 10px 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 600">Minutes per week</span>
+        <div style="display: flex; align-items: center; gap: 4px">
+          <button aria-label="Lower minutes" style="width: 44px; height: 44px; border-radius: 12px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 22px; font-weight: 600">−</button>
+          <span style="width: 52px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px">40</span>
+          <button aria-label="Raise minutes" style="width: 44px; height: 44px; border-radius: 12px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 22px; font-weight: 600">+</button>
+        </div>
+      </div>
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; justify-content: space-between; align-items: center; ">
+        <span style="font-size: 15px; font-weight: 600">Week starts on</span>
+        <span style="font-size: 15px; color: #5F6168">Monday ›</span>
+      </button>
+    </div>
+
+    <span style="font-size: 12px; font-weight: 700; color: #5F6168; text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 4px 0">During workout</span>
+    <div style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 1px 2px rgba(20,20,24,0.04), 0 6px 18px rgba(20,20,24,0.06); display: flex; flex-direction: column">
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 600">Get-ready countdown</span>
+        <span style="font-size: 15px; color: #5F6168">5 s ›</span>
+      </button>
+      <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #F0F0F2">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-size: 15px; font-weight: 600">Beep volume <span style="font-weight: 400; color: #5F6168">(loud)</span></span>
+          <button style="height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600">Test beep</button>
+        </div>
+        <div style="position: relative; height: 6px; border-radius: 999px; background: #ECECEF">
+          <div style="width: 80%; height: 100%; border-radius: 999px; background: #F28C00"></div>
+          <div style="position: absolute; left: 80%; top: -8px; width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF; border: 1px solid #D0D0D6; box-shadow: 0 1px 4px rgba(0,0,0,0.15); transform: translateX(-50%)"></div>
+        </div>
+      </div>
+      <div style="min-height: 52px; padding: 0 16px; display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 15px; font-weight: 600">Keep screen on</span>
+        <button role="switch" aria-checked="true" aria-label="Keep screen on" style="width: 52px; height: 32px; border-radius: 999px; border: none; background: #F28C00; position: relative; padding: 0">
+          <span style="position: absolute; right: 3px; top: 3px; width: 26px; height: 26px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.2)"></span>
+        </button>
+      </div>
+    </div>
+
+    <span style="font-size: 12px; font-weight: 700; color: #5F6168; text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 4px 0">Recovery</span>
+    <div style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 1px 2px rgba(20,20,24,0.04), 0 6px 18px rgba(20,20,24,0.06); display: flex; flex-direction: column">
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #0E6B62; font-family: Inter, sans-serif; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 700">Start a recovery week</span>
+        <span style="font-size: 15px; color: #5F6168">›</span>
+      </button>
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 600">Tell me it’s time after</span>
+        <span style="font-size: 15px; color: #5F6168">4 weeks ›</span>
+      </button>
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 600">Easy week goal</span>
+        <span style="font-size: 15px; color: #5F6168">55% (80) ›</span>
+      </button>
+      <div style="min-height: 52px; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F2">
+        <span style="font-size: 15px; font-weight: 600">Ask “Anything hurting?” after Hard</span>
+        <button role="switch" aria-checked="true" aria-label="Ask about pain after Hard" style="width: 52px; height: 32px; border-radius: 999px; border: none; background: #F28C00; position: relative; padding: 0; flex-shrink: 0">
+          <span style="position: absolute; right: 3px; top: 3px; width: 26px; height: 26px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.2)"></span>
+        </button>
+      </div>
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 15px; font-weight: 600">Take a break (sick / holiday)</span>
+        <span style="font-size: 15px; color: #5F6168">›</span>
+      </button>
+    </div>
+    <span style="font-size: 13px; color: #5F6168; padding: 0 4px; line-height: 1.4">After 4 training weeks, Home shows “Time for a recovery week”. It only starts when you tap Start. Hitting the easy goal keeps your streak.</span>
+
+    <span style="font-size: 12px; font-weight: 700; color: #5F6168; text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 4px 0">Catch-up</span>
+    <div style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 1px 2px rgba(20,20,24,0.04), 0 6px 18px rgba(20,20,24,0.06); display: flex; flex-direction: column">
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 15px; font-weight: 600">Offer catch-up until</span>
+        <span style="font-size: 15px; color: #5F6168">End of day ›</span>
+      </button>
+    </div>
+
+    <span style="font-size: 12px; font-weight: 700; color: #5F6168; text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 4px 0">Data</span>
+    <div style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 1px 2px rgba(20,20,24,0.04), 0 6px 18px rgba(20,20,24,0.06); display: flex; flex-direction: column">
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; text-align: left; border-bottom: 1px solid #F0F0F2">Export backup</button>
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; text-align: left; border-bottom: 1px solid #F0F0F2">Import backup</button>
+      <button style="min-height: 52px; padding: 0 16px; border: none; background: transparent; color: #B42318; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; text-align: left">Reset all data</button>
+    </div>
+    <span style="font-size: 13px; color: #5F6168; padding: 0 4px; line-height: 1.4">Your data is stored only on this phone. Export a backup now and then.</span>
+  </div>
+
+  <nav aria-label="Main" style="height: 76px; flex-shrink: 0; background: #FFFFFF; border-top: 1px solid #ECECEE; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding-bottom: 8px; box-sizing: border-box">
+    <button style="border: none; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5F6168; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"></path></svg>
+      Home
+    </button>
+    <button style="border: none; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5F6168; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M6 17v-6"></path><path d="M11 17V6"></path><path d="M16 17v-9"></path><path d="M21 17v-4"></path></svg>
+      History
+    </button>
+    <button style="border: none; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5F6168; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h5v-5h5v-5h5V5h3"></path></svg>
+      Levels
+    </button>
+    <button aria-current="page" style="border: none; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #B45309; font-family: Inter, sans-serif; font-size: 12px; font-weight: 700">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9"></path><path d="M19 6h1"></path><circle cx="16" cy="6" r="2.5"></circle><path d="M4 12h3"></path><path d="M13 12h7"></path><circle cx="10" cy="12" r="2.5"></circle><path d="M4 18h11"></path><circle cx="18" cy="18" r="2.5"></circle></svg>
+      Settings
+    </button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1350}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New / edit workout – Burpee Timer mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#B45309}a:hover{color:#92400E}
+</style>
+</head>
+<body>
+<div style="width: 390px; height: 1180px; box-sizing: border-box; display: flex; flex-direction: column; background: #F7F7F8; color: #1B1B1F; font-family: Inter, system-ui, sans-serif; overflow: hidden">
+  <div style="display: grid; grid-template-columns: 88px minmax(0, 1fr) 88px; align-items: center; padding: 14px 8px; background: #FFFFFF; border-bottom: 1px solid #ECECEE">
+    <button style="height: 44px; border: none; background: transparent; color: #5F6168; font-family: Inter, sans-serif; font-size: 16px; font-weight: 500; text-align: left; padding: 0 12px">Cancel</button>
+    <span style="text-align: center; font-size: 17px; font-weight: 700">New workout</span>
+    <button style="height: 44px; border: none; background: transparent; color: #B45309; font-family: Inter, sans-serif; font-size: 16px; font-weight: 700; text-align: right; padding: 0 12px">Save</button>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 22px; padding: 20px">
+    <div style="background: #FFFFFF; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(20,20,24,0.04), 0 6px 18px rgba(20,20,24,0.06)">
+      <span style="font-size: 12px; font-weight: 600; color: #5F6168; text-transform: uppercase; letter-spacing: 0.08em">Preview</span>
+      <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.01em">30 Standard burpees</span>
+      <span style="font-size: 14px; color: #5F6168">Every 15 s · total 7:30</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span style="font-size: 15px; font-weight: 700">Burpee type</span>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <button aria-pressed="true" style="height: 60px; border-radius: 14px; border: 2px solid #F28C00; background: #FFF4E5; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">Standard<span style="font-size: 12px; font-weight: 500; color: #6B4A1F">all-round</span></button>
+        <button aria-pressed="false" style="height: 60px; border-radius: 14px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">6-count<span style="font-size: 12px; font-weight: 500; color: #5F6168">conditioning</span></button>
+        <button aria-pressed="false" style="height: 60px; border-radius: 14px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">Navy SEAL<span style="font-size: 12px; font-weight: 500; color: #5F6168">strength</span></button>
+        <button aria-pressed="false" style="height: 60px; border-radius: 14px; border: 1px dashed #C9C9CF; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">Other…<span style="font-size: 12px; font-weight: 500; color: #5F6168">your own</span></button>
+      </div>
+
+      <div style="background: #FFFFFF; border-radius: 16px; border: 1px solid #ECECEE; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-size: 15px; font-weight: 700">How to do a Standard burpee</span>
+        </div>
+        <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.4; color: #2A2B30">
+          <li>Stand, feet shoulder-width apart</li>
+          <li>Squat down, hands on the floor</li>
+          <li>Kick feet back into a plank</li>
+          <li>One push-up, chest to the floor</li>
+          <li>Jump feet back to your hands</li>
+          <li>Jump up, hands overhead</li>
+        </ol>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <span style="font-size: 12px; font-weight: 600; background: #F3F3F5; padding: 5px 10px; border-radius: 999px">Beginner 12–15 s</span>
+          <span style="font-size: 12px; font-weight: 600; background: #F3F3F5; padding: 5px 10px; border-radius: 999px">Fit 4–5 s</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; line-height: 1.45; color: #3F4148">
+          <span><b style="color: #1B1B1F">Easier:</b> step back and in instead of jumping, skip the jump at the top.</span>
+          <span><b style="color: #1B1B1F">Watch out:</b> sagging hips in the plank, stiff-legged landings.</span>
+        </div>
+        <a href="TypeInfo.dc.html" style="font-size: 14px; font-weight: 600; text-decoration: none">Full guide →</a>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span style="font-size: 15px; font-weight: 700">Number of burpees</span>
+      <div style="background: #FFFFFF; border-radius: 16px; border: 1px solid #ECECEE; padding: 12px; display: flex; align-items: center; justify-content: space-between">
+        <button aria-label="Fewer burpees" style="width: 52px; height: 52px; border-radius: 14px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 26px; font-weight: 600">−</button>
+        <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 52px; line-height: 1">30</span>
+        <button aria-label="More burpees" style="width: 52px; height: 52px; border-radius: 14px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 26px; font-weight: 600">+</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <button style="height: 40px; border-radius: 999px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600">10</button>
+        <button style="height: 40px; border-radius: 999px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600">20</button>
+        <button style="height: 40px; border-radius: 999px; border: none; background: #1B1B1F; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600">30</button>
+        <button style="height: 40px; border-radius: 999px; border: 1px solid #DCDCE0; background: #FFFFFF; color: #1B1B1F; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600">40</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span style="font-size: 15px; font-weight: 700">Seconds per burpee</span>
+      <div style="background: #FFFFFF; border-radius: 16px; border: 1px solid #ECECEE; padding: 12px; display: flex; align-items: center; justify-content: space-between">
+        <button aria-label="Faster, 0.5 s less" style="width: 52px; height: 52px; border-radius: 14px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 26px; font-weight: 600">−</button>
+        <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 52px; line-height: 1">15.0<span style="font-size: 26px"> s</span></span>
+        <button aria-label="Slower, 0.5 s more" style="width: 52px; height: 52px; border-radius: 14px; border: none; background: #F3F3F5; color: #1B1B1F; font-size: 26px; font-weight: 600">+</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; padding: 4px 4px 0">
+        <div style="position: relative; height: 8px; border-radius: 999px; background: linear-gradient(to right, #1B1B1F 0%, #F28C00 55%, #F3D2A6 100%)">
+          <div style="position: absolute; left: 61%; top: -6px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; border: 3px solid #1B1B1F; box-sizing: border-box; transform: translateX(-50%)"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #5F6168">
+          <span>4 s · very fit</span>
+          <span>12–15 s · beginner</span>
+          <span>20 s</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; background: #FFFFFF; border-radius: 16px; border: 1px solid #ECECEE; padding: 16px">
+      <span style="font-size: 15px; font-weight: 600">Total time</span>
+      <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 32px; line-height: 1">7:30</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
