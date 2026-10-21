@@ -20,7 +20,7 @@ A phone app for doing burpees at a steady pace and getting better over time. Ins
 | Proposal and design | Done (2026-10-21) |
 | Phase 1: workouts, timer, beeps, saving sessions | Done (2026-10-21) |
 | Phase 2: weekly goal, history, records | – |
-| Phase 3: PWA install (manifest, offline, icons), export/import | – |
+| Phase 3: PWA install (manifest, offline, icons), export/import | Done (2026-10-21) |
 | Phase 4: motivation features and recovery weeks | – |
 | Phase 5: Monday review, levels, monthly challenge | – |
 
@@ -59,19 +59,25 @@ app/
   js/store.js       Workouts, sessions, settings in localStorage
   js/views.js       Screen templates
   js/types.js       Burpee types and how-to text
+  js/backup.js      Backup export/import, install button, new-version check
+  sw.js             Service worker: offline + always-fresh updates
+  manifest.webmanifest, icons/   Install metadata and icons
+  version.json      "dev" locally; the deploy writes the commit id here
 tests/              node:test unit tests
+tools/make_icons.py Regenerates app/icons (Pillow)
 docs/
   proposal.txt      Full spec: features, screens, technical notes, plan, decisions
   mockups/          Static HTML mockups of every screen. Open index.html in a browser.
   design-canvas/    Source files of the mockups (Claude design-canvas format, needs its viewer)
 ```
 
-## How it will work
+## How it works
 
 - **Tech:** plain HTML, CSS and JavaScript, with no frameworks and no build step.
 - **Beeps:** made with the Web Audio API, with no sound files. Screen kept on with the Wake Lock API.
 - **Data:** stored only on the phone, in the browser's local storage. Use Export/Import for backups.
-- **Install:** open the site on the phone and choose "Add to Home Screen" (iPhone: Safari > Share; Android: Chrome > Install app).
+- **Install:** open the site on the phone and choose "Add to Home Screen" (iPhone: Safari > Share; Android: Chrome > Install app, or the Install button in Settings).
+- **Offline and updates:** the service worker always fetches the newest files when online and falls back to the saved copy offline. When the app comes back on screen and a new deploy is out, it reloads itself (never during a workout).
 - **Hosting:** GitHub Pages (any static HTTPS host works, e.g. Netlify or a container running nginx or Caddy).
 - **iPhone note:** the Ring/Silent switch mutes web-app beeps, so keep it on Ring during workouts.
 

@@ -368,13 +368,34 @@ export function summary(r) {
 }
 
 // ------------------------------------------------------------------ Settings
-export function settings() {
+function installBlock(state) {
+  if (state === 'installed') {
+    return `<div class="between"><span style="font-weight:600">Installed on this phone</span><span class="pill good">✓ Ready offline</span></div>`;
+  }
+  if (state === 'prompt') {
+    return `<div class="between"><span style="font-weight:600">Install as an app</span>
+      <button class="btn small" style="height:40px" data-action="install">Install</button></div>`;
+  }
+  const how = state === 'ios'
+    ? 'In Safari, tap the Share button <b>↑</b>, then <b>Add to Home Screen</b>.'
+    : 'In Chrome, open the menu <b>⋮</b>, then <b>Add to Home screen</b> or <b>Install app</b>.';
+  return `<div class="stack" style="gap:4px"><span style="font-weight:600">Install as an app</span>
+    <span class="small muted" style="line-height:1.45">${how} It then opens full screen and works offline.</span></div>`;
+}
+
+export function settings({ install, version }) {
   const s = store.settings();
+  const lastBackup = s.lastBackupAt
+    ? new Date(s.lastBackupAt).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' })
+    : 'never';
   const seg = (action, current, options) => `<div class="seg">${options.map(([v, label]) =>
     `<button data-action="${action}" data-value="${v}" aria-pressed="${String(current) === String(v)}">${label}</button>`).join('')}</div>`;
   return `
   <main class="screen with-nav">
     <h1>Settings</h1>
+
+    <span class="group-label">App</span>
+    <div class="group">${installBlock(install)}</div>
 
     <span class="group-label">During workout</span>
     <div class="group">
@@ -406,9 +427,14 @@ export function settings() {
 
     <span class="group-label">Data</span>
     <div class="group">
+      <button class="text-btn between" style="padding:14px 16px" data-action="export">
+        <span>Export backup</span><span class="small muted" style="font-weight:400">Last: ${lastBackup}</span>
+      </button>
+      <button class="text-btn" style="text-align:left;padding:14px 16px" data-action="import">Import backup</button>
       <button class="text-btn" style="text-align:left;color:var(--danger);padding:14px 16px" data-action="reset">Reset all data</button>
     </div>
-    <span class="small muted" style="padding:0 4px;line-height:1.4">Your data is stored only on this phone. Backup export comes in a later version.</span>
+    <span class="small muted" style="padding:0 4px;line-height:1.4">Your data is stored only on this phone. Export a backup now and then and keep the file somewhere safe (Files, Drive, email).</span>
+    <span class="small muted" style="text-align:center;padding-top:8px">Burpee Timer · version ${esc((version || 'dev').slice(0, 7))}</span>
   </main>
   ${nav('settings')}`;
 }

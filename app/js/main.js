@@ -3,6 +3,7 @@
 import * as store from './store.js';
 import * as audio from './audio.js';
 import * as views from './views.js';
+import * as backup from './backup.js';
 import { WorkoutRun } from './engine.js';
 import { TYPES, workoutTitle } from './types.js';
 import { clock, duration } from './format.js';
@@ -28,6 +29,7 @@ function replace(name, params = {}) {
 }
 
 function resetTo(name, params = {}) {
+  if (updateReady && name === 'home') return location.reload();
   stack = [{ name, params }];
   render(true);
 }
@@ -67,7 +69,7 @@ function render(scrollTop = false) {
   let html;
   switch (name) {
     case 'home': html = views.home(); break;
-    case 'settings': html = views.settings(); break;
+    case 'settings': html = views.settings({ install: backup.installState(), version: backup.currentVersion() }); break;
     case 'detail': {
       const w = store.getWorkout(params.id);
       if (!w) { stack = [{ name: 'home' }]; return render(); }
@@ -319,7 +321,20 @@ async function setWakeLock(on) {
   }
 }
 
+// ------------------------------------------------------------------ updates
+// When the app comes back to the screen, check for a new deploy. Reload right
+// away on a calm screen; otherwise wait until the next return to Home.
+let updateReady = false;
+const CALM_SCREENS = ['home', 'settings', 'detail', 'howto'];
+
+async function checkForUpdate() {
+  if (updateReady || !(await backup.updateAvailable())) return;
+  updateReady = true;
+  if (!active && CALM_SCREENS.includes(top().name)) location.reload();
+}
+
 document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && !active) checkForUpdate();
   if (!active) return;
   if (document.hidden) {
     // Leaving the app pauses the workout so no time or beeps are lost.
@@ -431,6 +446,33 @@ const actions = {
   'set-catchup': (el) => { store.updateSettings({ catchUpUntil: el.dataset.value }); render(); },
   'toggle-awake': () => { store.updateSettings({ keepAwake: !store.settings().keepAwake }); render(); },
   'test-beep': () => { audio.unlock(); audio.play('beep'); },
+  install: () => backup.promptInstall(),
+  export: async () => {
+    const how = await backup.exportBackup();
+    if (how === 'cancelled') return;
+    render();
+    toast(how === 'shared' ? 'Backup ready' : 'Backup downloaded');
+  },
+  import: async () => {
+    let data;
+    try {
+      data = await backup.pickBackup();
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
+    if (!data) return;
+    const when = data.exportedAt ? new Date(data.exportedAt).toLocaleDateString() : 'unknown date';
+    const msg = `Replace everything on this phone with this backup?
+
+Backup from ${when}: ` +
+      `${data.workouts.length} workouts, ${data.sessions.length} sessions.`;
+    if (!confirm(msg)) return;
+    store.importData(data);
+    audio.setVolume(store.settings().volume);
+    resetTo('home');
+    toast('Backup restored');
+  },
   reset: () => {
     if (!confirm('Delete all workouts and history on this phone? This cannot be undone.')) return;
     store.resetAll();
@@ -459,4 +501,7 @@ app.addEventListener('keydown', (e) => {
 
 // ------------------------------------------------------------------ start
 audio.setVolume(store.settings().volume);
+backup.watchInstall(() => { if (top().name === 'settings') render(); });
+backup.registerServiceWorker();
+backup.initVersion();
 render();

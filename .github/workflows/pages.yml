@@ -38,6 +38,8 @@ jobs:
           mkdir -p _site
           cp -r app/. _site/
           cp -r docs/mockups _site/mockups
+          # The app compares this with what it loaded to know a new version is out.
+          echo "{ \"version\": \"${GITHUB_SHA}\", \"date\": \"$(date -u +%Y-%m-%dT%H:%MZ)\" }" > _site/version.json
 
       - uses: actions/configure-pages@v5
 

@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS = {
   volume: 0.8,
   keepAwake: true,
   catchUpUntil: 'endOfDay', // endOfDay | untilDone
+  lastBackupAt: null,
 };
 
 function seed() {
@@ -120,5 +121,46 @@ export function dismissCatchUp(sessionId) {
 
 export function resetAll() {
   data = seed();
+  save();
+}
+
+// ---- backup
+export function exportData() {
+  return JSON.stringify({ app: 'burpee-interval-timer', exportedAt: new Date().toISOString(), ...data }, null, 2);
+}
+
+export function markBackedUp() {
+  data.settings.lastBackupAt = Date.now();
+  save();
+}
+
+// Validates a backup file's text; throws with a readable message if it's wrong.
+export function parseBackup(text) {
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error('This file is not a backup (not valid JSON).');
+  }
+  if (parsed?.app !== 'burpee-interval-timer' || !Array.isArray(parsed.workouts) || !Array.isArray(parsed.sessions)) {
+    throw new Error('This file is not a Burpee Timer backup.');
+  }
+  if (parsed.version > 1) throw new Error('This backup is from a newer version of the app. Update the app first.');
+  const okWorkout = (w) => w && typeof w.id === 'string' && typeof w.type === 'string' && w.count > 0 && w.pace > 0;
+  const okSession = (s) => s && typeof s.id === 'string' && typeof s.done === 'number' && typeof s.target === 'number' && s.startedAt;
+  if (!parsed.workouts.every(okWorkout) || !parsed.sessions.every(okSession)) {
+    throw new Error('This backup looks damaged. Nothing was changed.');
+  }
+  return parsed;
+}
+
+export function importData(backup) {
+  const { app, exportedAt, ...rest } = backup;
+  data = {
+    version: 1,
+    workouts: rest.workouts,
+    sessions: rest.sessions,
+    settings: { ...DEFAULT_SETTINGS, ...rest.settings },
+  };
   save();
 }
