@@ -24,6 +24,13 @@ A phone app for doing burpees at a steady pace and getting better over time. Ins
 | Phase 4: motivation features and recovery weeks | – |
 | Phase 5: Monday review, levels, monthly challenge | – |
 
+## Live
+
+- App: https://codezerg.github.io/burpee-interval-timer-pwa/
+- Mockups: https://codezerg.github.io/burpee-interval-timer-pwa/mockups/
+
+Deployed by GitHub Actions (`.github/workflows/pages.yml`) on every push to `main`: runs the tests, then publishes `app/` (and `docs/mockups/` under `/mockups`).
+
 ## Run it locally
 
 No install, no build. Serve the `app/` folder with any static web server:
@@ -65,7 +72,7 @@ docs/
 - **Beeps:** made with the Web Audio API, with no sound files. Screen kept on with the Wake Lock API.
 - **Data:** stored only on the phone, in the browser's local storage. Use Export/Import for backups.
 - **Install:** open the site on the phone and choose "Add to Home Screen" (iPhone: Safari > Share; Android: Chrome > Install app).
-- **Hosting:** any static HTTPS host, such as Netlify or a container running nginx or Caddy. Not decided yet.
+- **Hosting:** GitHub Pages (any static HTTPS host works, e.g. Netlify or a container running nginx or Caddy).
 - **iPhone note:** the Ring/Silent switch mutes web-app beeps, so keep it on Ring during workouts.
 
 ## License
