@@ -205,7 +205,7 @@ function updateRun() {
   const big = $('r-big');
   if (big) big.setAttribute('stroke-dashoffset', (views.RING.BIG_C * (1 - st.progress)).toFixed(1));
   const small = $('r-small');
-  if (small) small.setAttribute('stroke-dashoffset', (views.RING.SMALL_C * (1 - st.burpeeLeft / run.pace)).toFixed(1));
+  if (small) small.setAttribute('stroke-dashoffset', (views.RING.SMALL_C * (st.burpeeLeft / run.pace)).toFixed(1));
   if (active.phase === 'paused') {
     setText('r-paused', duration(run.clock() - run.pauseStartedAt));
     const done = run.done();

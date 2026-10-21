@@ -243,7 +243,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
 .ring-big .digits { font-size: min(76px, 19vw, 10vh); }
 .ring-small { width: min(132px, 34vw, 18vh); aspect-ratio: 1; flex-shrink: 0; }
 .ring-small .digits { font-size: min(56px, 14vw, 7.5vh); }
-.ring circle { transition: stroke-dashoffset 0.1s linear; }
 
 .run-bottom { display: flex; align-items: center; justify-content: space-between; padding: 0 12px; }
 .run-bottom > div { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 72px; font-size: 12px; color: var(--muted); text-align: center; }

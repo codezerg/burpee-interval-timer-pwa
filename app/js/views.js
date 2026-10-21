@@ -285,7 +285,7 @@ export function run({ title, count, paceSec, total, paused, muted }) {
           <svg viewBox="0 0 132 132" aria-hidden="true">
             <circle cx="66" cy="66" r="58" fill="${paused ? '#FFFFFF' : '#FFF8EE'}" stroke="${paused ? '#E8E8EC' : '#FBE3C2'}" stroke-width="10"/>
             <circle class="bar" id="r-small" cx="66" cy="66" r="58" fill="none" stroke="#F28C00" stroke-width="10" stroke-linecap="round"
-              stroke-dasharray="${SMALL_C.toFixed(1)}" stroke-dashoffset="0" transform="rotate(-90 66 66)"/>
+              stroke-dasharray="${SMALL_C.toFixed(1)}" stroke-dashoffset="${SMALL_C.toFixed(1)}" transform="rotate(-90 66 66)"/>
           </svg>
           <div class="center">
             <span class="digits" id="r-sec">${Math.ceil(paceSec)}</span>
